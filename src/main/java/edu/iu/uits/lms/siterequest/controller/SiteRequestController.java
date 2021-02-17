@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Created by chmaurer on 8/26/15.
@@ -160,8 +161,11 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
             return submissionFailure(model);
         }
 
+        List<Account> parentAccounts = accountService.getParentAccounts(createdCourse.getAccountId());
+        List<String> parentAccountIds = parentAccounts.stream().map(Account::getId).collect(Collectors.toList());
+
         // Apply the template to the newly created course
-        if (featureAccessService.isFeatureEnabledForAccount(FEATURE_APPLY_TEMPLATE_FOR_MANUAL_COURSES, createdCourse.getAccountId())) {
+        if (featureAccessService.isFeatureEnabledForAccount(FEATURE_APPLY_TEMPLATE_FOR_MANUAL_COURSES, createdCourse.getAccountId(), parentAccountIds)) {
             //When a course is first created, canvas does not return anything for the term, so need to look it up if it's not provided
             String sisTermId = null;
             if (createdCourse.getTerm() != null) {
@@ -175,7 +179,7 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
         }
 
         // Set the features on the newly created course
-        if (featureAccessService.isFeatureEnabledForAccount(FEATURE_ENABLE_FEATURES_FOR_MANUAL_COURSES, canvasApi.getRootAccount())) {
+        if (featureAccessService.isFeatureEnabledForAccount(FEATURE_ENABLE_FEATURES_FOR_MANUAL_COURSES, canvasApi.getRootAccount(), null)) {
             checkAndSetCourseFeatures(createdCourse);
         }
 
