@@ -231,7 +231,12 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
         // retrieve the user's profile
         String timeZone = canvasUser.getTimeZone();
         if (timeZone == null) {
-            Profile profile = userService.getProfile(canvasUser.getSisUserId());
+            Profile profile = null;
+
+            if (canvasUser.getSisUserId() != null) {
+                profile = userService.getProfile(canvasUser.getSisUserId());
+            }
+
             if (profile != null) {
                 timeZone = profile.getTimeZone();
             }
