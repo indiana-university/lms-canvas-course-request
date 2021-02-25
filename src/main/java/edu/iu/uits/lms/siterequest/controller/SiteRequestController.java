@@ -267,12 +267,12 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
 
     @RequestMapping("/notteacher")
     public String notTeacher(Model model) {
-        return "error";
+        return "siterequest_error";
     }
 
     @RequestMapping("/submissionfailure")
     public String submissionFailure(Model model) {
-        return "error";
+        return "siterequest_error";
     }
 
     /**
