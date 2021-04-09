@@ -47,7 +47,7 @@ spring:
 siterequest:
   version: @app.version@
   env: ${app.env}
-  courseTemplateQueueName: LMS.AQ_PROVISIONING_QUEUE
+  courseTemplateQueueName: coursetemplate_${app.env}
 
 server:
   error:
