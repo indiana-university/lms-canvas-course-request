@@ -1,6 +1,6 @@
 spring:
   application:
-    name: microservices-template
+    name: siterequest
   profiles:
     active: redis
   session:
@@ -13,9 +13,43 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${oauth.tokenprovider.url}/.well-known/jwks.json
-microservices-template:
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        temp:
+          use_jdbc_metadata_defaults: false
+      jadira:
+        usertype:
+          autoRegisterUserTypes: true
+  datasource:
+    driverClassName: ${lms.db.driverClass}
+    url: ${lms.db.url}
+    username: ${lms.db.user}
+    password: ${lms.db.password}
+    type: org.springframework.jdbc.datasource.DriverManagerDataSource
+  rabbitmq:
+    addresses: ${lms.rabbitmq.address.${app.env}}
+    username: ${lms.rabbitmq.username.${app.env}}
+    password: ${lms.rabbitmq.password.${app.env}}
+    virtualHost: ${lms.rabbitmq.virtualHost.${app.env}}
+    listener.simple:
+      missing-queues-fatal: false
+      retry:
+        enabled: true
+        initial-interval: 3s
+        max-attempts: 3
+        max-interval: 10s
+        multiplier: 2
+siterequest:
   version: @app.version@
   env: ${app.env}
+  courseTemplateQueueName: coursetemplate_${app.env}
 
 server:
   error:
@@ -31,4 +65,4 @@ spring:
   profiles: redis
   session:
     store-type: redis
-    redis.namespace: microservices-template-${app.version}:session
+    redis.namespace: siterequest-${app.version}:session

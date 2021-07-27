@@ -3,13 +3,14 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
-    <title>microservices-template - Home</title>
+    <title>Start A New Course</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/rivet-bundle.min.css}" />
-    <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/css/microservices-template.css}"/>
+    <link th:href="@{/app/css/common_legacy_normal_contrast.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/app/webjars/font-awesome/css/font-awesome.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/app/css/siterequest.css}" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 
@@ -35,9 +36,8 @@
     <div id="footer" th:text="${@serverInfo}"></div>
 </footer>
 
-<script type="text/javascript" th:src="@{/app/jsrivet/rivet-bundle.min.js}"></script>
 <script type="text/javascript" th:src="@{/app/webjars/jquery/jquery.min.js}"></script>
-<script type="text/javascript" th:src="@{/app/js/microservices-template.js}"></script>
+<script type="text/javascript" th:src="@{/app/js/siterequest.js}"></script>
 
 <th:block layout:fragment="script">
     <!--

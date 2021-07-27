@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Canvas Course Request - Create Form</title>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+    <div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable ui-dialog-buttons siterequest-style" tabindex="-1" aria-hidden="false">
+        <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+            <h1><span id="ui-id-1" class="ui-dialog-title" th:text="#{start.new.course}">Start A New Course</span></h1>
+        </div>
+        <form id="new_course_form" class="bootstrap-form form-horizontal ui-dialog-content ui-widget-content form-style" method="post" action="create_site.html" th:action="@{|/app/provisionsite|}" accept-charset="UTF-8" aria-expanded="true" >
+
+            <div class="control-group">
+                <p th:text="#{complete.form.info}">Complete this form to create a new Canvas course.</p>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="full_name" th:text="#{create.name}">Name</label>
+                <div class="controls">
+                    <input id="full_name" class="input-xlarge" type="text" size="255"  th:value="${displayname}" name="full_name" maxlength="255" readonly="readonly"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="username" th:text="#{create.username}">Username</label>
+                <div class="controls">
+                    <input id="username" class="input-xlarge" type="text" size="255" th:value="${username}" name="username" maxlength="255" readonly="readonly"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="course_name" th:text="#{create.coursename}" >Course Name</label>
+                <div class="controls">
+                    <input id="course_name" class="input-xlarge" type="text" size="255" placeholder="Course Name" name="course_name" 
+                           th:value="${coursename}" maxlength="255" th:attr="aria-describedby=${courseNameError != null} ? 'course_name_error_text', aria-invalid=${courseNameError != null} ? 'true'"/>
+                    <div id="course_name_error" class="ic-Form-message ic-Form-message--error">
+                        <div th:if="${courseNameError != null}" class="ic-Form-message__Layout dummy-class-for-accessibility-focus">
+                            <i class="icon-warning" role="presentation"></i>
+                            <p id="course_name_error_text" th:text="${courseNameError}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="short_name" th:text="#{create.shortname}">Short Name</label>
+                <div class="controls">
+                    <input id="short_name" class="input-xlarge" type="text" size="255" placeholder="Short Name" name="short_name" th:value="${shortname}" maxlength="255"/>
+                    <div id="short_name_error" class="ic-Form-message ic-Form-message--error">
+                        <div th:if="${shortNameError != null}" class="ic-Form-message__Layout dummy-class-for-accessibility-focus"
+                             th:attr="aria-describedby=${shortNameError != null} ? 'short_name_error_text', aria-invalid=${shortNameError != null} ? 'true'">
+                            <i class="icon-warning" role="presentation"></i>
+                            <p id="short_name_error_text" th:text="${shortNameError}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="course_license" th:text="#{create.content.license}">Content License</label>
+                <div class="controls">
+                    <select id="course_license" class="input-xlarge" name="course_license">
+                        <option th:text="#{license.selectcontent}" value="">Select the content license...</option>
+                        <option th:each="license : ${licenseList}" th:text="${license.name}" th:value="${license.id}" th:selected="${license.id == courselicense}">License Texts</option>
+                    </select>
+                    <div id="course_license_error" th:if="${courseLicenseError != null}" class="ic-Form-message ic-Form-message--error dummy-class-for-accessibility-focus"
+                         th:attr="aria-describedby=${courseLicenseError != null} ? 'course_license_error_text', aria-invalid=${courseLicenseError != null} ? 'true'">
+                        <div class="ic-Form-message__Layout">
+                            <i class="icon-warning" role="presentation"></i>
+                            <p id="course_license_error_text" th:text="${courseLicenseError}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="node_location" th:text="#{create.department.school.college}">Department, School, or College</label>
+                <div class="controls">
+                    <select id="node_location" class="input-xlarge" name="node_location">
+                        <option value="" th:text="#{academic.select.unit}">Select an academic unit...</option>
+                        <option th:each="account : ${accounts}" th:text="${account.name}" th:value="${account.id}" th:selected="${account.id == nodelocation}">AccountName</option>
+                    </select>
+                    <div id="academic_unit_error" th:if="${nodeLocationError != null}" class="ic-Form-message ic-Form-message--error dummy-class-for-accessibility-focus"
+                         th:attr="aria-describedby=${nodeLocationError != null} ? 'academic_unit_error_text', aria-invalid=${nodeLocationError != null} ? 'true'">
+                        <div class="ic-Form-message__Layout">
+                            <i class="icon-warning" role="presentation"></i>
+                            <p id="academic_unit_error_text" th:text="${nodeLocationError}" />
+                        </div>
+                    </div>
+                    <p style="color: #666" th:text="#{create.location.info}">(locations ending with GRP represent schools and colleges)</p>
+                </div>
+
+            </div>
+
+            <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <div class="ui-dialog-buttonset">
+                    <button id="courseSubmit" class="btn btn-primary button_type_submit ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"
+                            type="submit" data-text-while-loading="Creating course..." role="button" aria-disabled="false" name="action" value="submit">
+                        <span class="ui-button-text" th:text="#{create.createcourse.button}">Create course</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,7 +1,7 @@
-package edu.iu.uits.lms.microservicestemplate.services;
+package edu.iu.uits.lms.siterequest.services;
 
-import edu.iu.uits.lms.microservicestemplate.config.ToolConfig;
-import edu.iu.uits.lms.microservicestemplate.controller.MicroservicesTemplateLtiController;
+import edu.iu.uits.lms.siterequest.config.ToolConfig;
+import edu.iu.uits.lms.siterequest.controller.SiteRequestLtiController;
 import lti.client.generated.api.LtiAuthApi;
 import lti.client.generated.api.LtiPropsApi;
 import lti.client.generated.model.LmsLtiAuthz;
@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(MicroservicesTemplateLtiController.class)
+@WebMvcTest(SiteRequestLtiController.class)
 @Import(ToolConfig.class)
 @ActiveProfiles("none")
 public class LtiLaunchSecurityTest {
@@ -89,7 +89,7 @@ public class LtiLaunchSecurityTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .content(EntityUtils.toString(new UrlEncodedFormEntity(nvpList))))
 
-            .andExpect(status().isOk());
+            .andExpect(status().is3xxRedirection());
    }
 
    private Map<String, String> signParameters(Map<String, String> parameters, String key, String secret, String url, String method) throws Exception {
