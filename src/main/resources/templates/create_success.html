@@ -11,7 +11,7 @@
 
 <div layout:fragment="content">
     <h1 id="ui-id-1" class="rvt-ts-32 rvt-p-tb-sm" th:text="#{start.new.course}">Start A New Course</h1>
-    <div class="rvt-alert rvt-alert--success rvt-m-bottom-md rvt-width-xl" role="alertdialog" aria-labelledby="success-alert-title">
+    <div class="rvt-alert rvt-alert--success rvt-m-bottom-md rvt-width-xl" role="alert" aria-labelledby="success-alert-title">
         <p class="rvt-alert__message" th:utext="#{success.info}" id="success-alert-title">Success: Your course has been successfully created!</p>
     </div>
     <div>
@@ -32,7 +32,7 @@
             <dd th:text="${endDate}">7/13/2016</dd>
         </dl>
     </div>
-    <div class="rvt-alert rvt-alert--info rvt-m-top-md rvt-width-xl" role="alertdialog" aria-labelledby="information-alert-title">
+    <div class="rvt-alert rvt-alert--info rvt-m-top-md rvt-width-xl" role="alert" aria-labelledby="information-alert-title">
         <p class="rvt-alert__message" th:utext="#{success.active.info}" id="information-alert-title">
             This course will remain active for one year.  For information on how to extend the end date, see link
         </p>

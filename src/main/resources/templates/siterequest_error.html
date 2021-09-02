@@ -12,20 +12,20 @@
 <div layout:fragment="content">
     <h1 id="ui-id-1" class="rvt-ts-32 rvt-p-tb-sm" th:text="#{partial.fail.error}">Canvas Site Request Error</h1>
 
-    <div th:if="${notTeacher}" class="rvt-alert rvt-alert--danger rvt-m-bottom-md rvt-width-xl" role="alertdialog" aria-labelledby="not-teacher-error-title">
+    <div th:if="${notTeacher}" class="rvt-alert rvt-alert--danger rvt-m-bottom-md rvt-width-xl" role="alert" aria-labelledby="not-teacher-error-title">
         <p class="rvt-alert__message" th:utext="#{failed.error}" id="not-teacher-error-title">Error: You cannot create a new course because you are not listed as a Teacher in Canvas.</p>
         <p class="rvt-alert__message" th:utext="#{failed.info}"></p>
     </div>
-    <div th:if="${courseCreationError}" class="rvt-alert rvt-alert--danger rvt-m-bottom-md rvt-width-xl" role="alertdialog" aria-labelledby="course-creation-error-title">
+    <div th:if="${courseCreationError}" class="rvt-alert rvt-alert--danger rvt-m-bottom-md rvt-width-xl" role="alert" aria-labelledby="course-creation-error-title">
         <p class="rvt-alert__message" th:utext="#{partial.fail.course}" id="course-creation-error-title">The whole thing failed!</p>
     </div>
-    <div th:if="${sectionCreationError}" class="rvt-alert rvt-alert--danger rvt-m-bottom-md rvt-width-xl" role="alertdialog" aria-labelledby="section-creation-error-title">
+    <div th:if="${sectionCreationError}" class="rvt-alert rvt-alert--danger rvt-m-bottom-md rvt-width-xl" role="alert" aria-labelledby="section-creation-error-title">
         <p class="rvt-alert__message" th:utext="#{partial.fail.section}" id="section-creation-error-title">Course was created (here's the ids!), but need an administrator to create a section and enroll you!</p>
         <p class="rvt-alert__message" th:utext="#{partial.fail.course.name(${courseName})}">Course Name: IN INFO PROJECT MANAGEMENT 101</p>
         <p class="rvt-alert__message" th:utext="#{partial.fail.course.id(${courseId})}">Canvas Course Id: 12345</p>
         <p class="rvt-alert__message" th:utext="#{partial.fail.info}"></p>
     </div>
-    <div th:if="${userEnrollmentError}" class="rvt-alert rvt-alert--danger rvt-m-bottom-md rvt-width-xl" role="alertdialog" aria-labelledby="user-enrollment-error-title">
+    <div th:if="${userEnrollmentError}" class="rvt-alert rvt-alert--danger rvt-m-bottom-md rvt-width-xl" role="alert" aria-labelledby="user-enrollment-error-title">
         <p class="rvt-alert__message" th:utext="#{partial.fail.enrollment}" id="user-enrollment-error-title">Course and section was created, but you were not enrolled!</p>
         <p class="rvt-alert__message" th:utext="#{partial.fail.course.name(${courseName})}">Course Name: IN INFO PROJECT MANAGEMENT 101</p>
         <p class="rvt-alert__message" th:utext="#{partial.fail.course.id(${courseId})}">Canvas Course Id: 12345</p>
