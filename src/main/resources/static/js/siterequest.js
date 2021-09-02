@@ -1,18 +1,9 @@
 $(document).ready(function() {
-    var errorFocusElements = $(".dummy-class-for-accessibility-focus");
+    var errorFocusElements = $(".rvt-validation-danger");
 
     if(errorFocusElements.length > 0) {
         //always focus the first error element
-        errorFocusElements.first().parents(".controls").children().first().focus();
-
-        $.each(errorFocusElements, function(index, value) {
-
-            var inputOrSelectElement = $(this).parents(".controls").children().first();
-            inputOrSelectElement.attr("aria-invalid", "true");
-
-            var errorId = inputOrSelectElement.siblings("div.ic-Form-message--error").first().attr("id");
-            inputOrSelectElement.attr("aria-describedby", errorId);
-        });
+        errorFocusElements.first().focus();
     }
 
     // this will prevent form from submitting twice
