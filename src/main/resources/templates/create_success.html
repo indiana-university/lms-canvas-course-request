@@ -15,21 +15,21 @@
         <p class="rvt-alert__message" th:utext="#{success.info}" id="success-alert-title">Success: Your course has been successfully created!</p>
     </div>
     <div>
-        <dl>
-            <dt th:text="#{success.course.name}">Course Name:</dt>
-            <dd th:text="${courseName}">IN INFO PROJECT MANAGEMENT 101</dd>
-            <dt th:text="#{success.short.name}">Short Name:</dt>
-            <dd th:text="${shortName}">PROJECT MANAGEMENT 101</dd>
-            <dt th:text="#{success.content.license}">Content License:</dt>
-            <dd th:text="${license}">Public</dd>
-            <dt th:if="${accountName != null}" th:text="#{success.department.school.college}">Department, School, or College:</dt>
-            <dd th:if="${accountName != null}" th:text="${accountName}">IN-INFO</dd>
-            <dt th:text="#{success.link}">Link:</dt>
-            <dd><a th:href="${url}" th:text="${url}" target="_blank">URL for course</a></dd>
-            <dt th:text="#{success.teacher}">Teacher:</dt>
-            <dd th:text="${displayName}">Jane Smith</dd>
-            <dt th:text="#{success.end.date}">End Date:</dt>
-            <dd th:text="${endDate}">7/13/2016</dd>
+        <dl id="course_data_list">
+            <dt id="course_name" th:text="#{success.course.name}">Course Name:</dt>
+            <dd id="course_name_info" th:text="${courseName}">IN INFO PROJECT MANAGEMENT 101</dd>
+            <dt id="short_name" th:text="#{success.short.name}">Short Name:</dt>
+            <dd id="short_name_info" th:text="${shortName}">PROJECT MANAGEMENT 101</dd>
+            <dt id="content_license" th:text="#{success.content.license}">Content License:</dt>
+            <dd id="content_license_info" th:text="${license}">Public</dd>
+            <dt id="dept_school_college" th:if="${accountName != null}" th:text="#{success.department.school.college}">Department, School, or College:</dt>
+            <dd id="dept_school_college_info" th:if="${accountName != null}" th:text="${accountName}">IN-INFO</dd>
+            <dt id="url" th:text="#{success.link}">Link:</dt>
+            <dd id="url_info"><a th:href="${url}" th:text="${url}" target="_blank">URL for course</a></dd>
+            <dt id="teacher" th:text="#{success.teacher}">Teacher:</dt>
+            <dd id="teacher_info" th:text="${displayName}">Jane Smith</dd>
+            <dt id="end_date" th:text="#{success.end.date}">End Date:</dt>
+            <dd id="end_date_info" th:text="${endDate}">7/13/2016</dd>
         </dl>
     </div>
     <div class="rvt-alert rvt-alert--info rvt-m-top-md rvt-width-xl" role="alert" aria-labelledby="information-alert-title">
