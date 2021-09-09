@@ -10,6 +10,25 @@
 <body>
 
 <div layout:fragment="content">
+    <!-- Summary error list w/ links -->
+    <div id="msgErrors" tabindex="-1" class="rvt-alert rvt-alert--danger rvt-m-top-sm rvt-width-xl" role="alert"
+         th:if="${courseNameError != null} or ${shortNameError != null} or ${courseLicenseError != null} or ${nodeLocationError != null}">
+        <h1 id="msgErrorsTitle" class="rvt-alert__title">Errors:</h1>
+        <ul>
+            <li id="missingCourseName" class="rvt-alert-list__item" th:if="${courseNameError != null}">
+                <a href="javascript:document.getElementById('course_name').focus()" id="msgMissingCourseName" class="rvt-alert__message" th:text="${courseNameError}">You must select at least one recipient before sending the message.</a>
+            </li>
+            <li id="missingShortName" class="rvt-alert-list__item" th:if="${shortNameError != null}">
+                <a href="javascript:document.getElementById('short_name').focus()" id="msgMissingShortName" class="rvt-alert__message" th:text="${shortNameError}">Missing subject</a>
+            </li>
+            <li id="missingCourseLicense" class="rvt-alert-list__item" th:if="${courseLicenseError}">
+                <a href="javascript:document.getElementById('course_license').focus()" id="msgMissingCourseLicense" class="rvt-alert__message" th:text="${courseLicenseError}">A message text is required.</a>
+            </li>
+            <li id="missingNodeLocation" class="rvt-alert-list__item" th:if="${nodeLocationError}">
+                <a href="javascript:document.getElementById('node_location').focus()" id="attachQuotaError" class="rvt-alert__message" th:text="${nodeLocationError}">Attachment exceeded user quota.</a>
+            </li>
+        </ul>
+    </div>
     <h1 id="ui-id-1" class="rvt-ts-32 rvt-p-tb-sm" th:text="#{start.new.course}">Start A New Course</h1>
     <form id="new_course_form" method="post" action="create_site.html" th:action="@{|/app/provisionsite|}" accept-charset="UTF-8" aria-expanded="true" >
         <div class="rvt-p-top-xs">
@@ -24,7 +43,7 @@
                maxlength="255" disabled aria-disabled="true" />
 
         <label for="course_name" th:text="#{create.coursename}" class="rvt-m-top-md">Course Name</label>
-        <input id="course_name" type="text" class="rvt-width-lg" size="255" placeholder="Course Name" name="course_name"
+        <input id="course_name" type="text" class="rvt-width-lg" size="255" name="course_name"
                th:value="${coursename}" maxlength="255"
                th:classappend="${courseNameError != null} ? 'rvt-validation-danger'"
                th:aria-describedby="${courseNameError != null} ? 'course_name_error_text'"
@@ -44,7 +63,7 @@
         </div>
 
         <label for="short_name" th:text="#{create.shortname}" class="rvt-m-top-md">Short Name</label>
-        <input id="short_name" type="text" class="rvt-width-lg" size="255" placeholder="Short Name" name="short_name"
+        <input id="short_name" type="text" class="rvt-width-lg" size="255" name="short_name"
                th:value="${shortname}" maxlength="255"
                th:classappend="${shortNameError != null} ? 'rvt-validation-danger'"
                th:aria-describedby="${shortNameError != null} ? 'short_name_error_text'"
