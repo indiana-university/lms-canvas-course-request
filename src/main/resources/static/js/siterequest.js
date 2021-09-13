@@ -4,4 +4,6 @@ $(document).ready(function() {
         $('#courseSubmit').prop('disabled', true);
     });
 
+    $("#msgErrors").show().focus();
+
 });
