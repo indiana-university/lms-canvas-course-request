@@ -10,37 +10,32 @@
 <body>
 
 <div layout:fragment="content">
-    <div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-draggable ui-dialog-buttons siterequest-style" tabindex="-1" aria-hidden="false">
-        <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
-          <h1><span id="ui-id-1" class="ui-dialog-title" th:text="#{start.new.course}">Start A New Course</span></h1>
-        </div>
-
-        <div class="content-box">
-            <div class="alert alert-success alert-style">
-                <p th:utext="#{success.info}">Success: Your course has been successfully created!</p>
-            </div>
-            <div>
-                <dl class="dl-horizontal">
-                    <dt th:text="#{success.course.name}">Course Name:</dt>
-                    <dd th:text="${courseName}">IN INFO PROJECT MANAGEMENT 101</dd>
-                    <dt th:text="#{success.short.name}">Short Name:</dt>
-                    <dd th:text="${shortName}">PROJECT MANAGEMENT 101</dd>
-                    <dt th:text="#{success.content.license}">Content License:</dt>
-                    <dd th:text="${license}">Public</dd>
-                    <dt th:if="${accountName != null}" th:text="#{success.department.school.college}">Department, School, or College:</dt>
-                    <dd th:if="${accountName != null}" th:text="${accountName}">IN-INFO</dd>
-                    <dt th:text="#{success.link}">Link:</dt>
-                    <dd><a th:href="${url}" th:text="${url}" target="_blank">URL for course</a></dd>
-                    <dt th:text="#{success.teacher}">Teacher:</dt>
-                    <dd th:text="${displayName}">Jane Smith</dd>
-                    <dt th:text="#{success.end.date}">End Date:</dt>
-                    <dd th:text="${endDate}">7/13/2016</dd>
-                </dl>
-            </div>
-            <div class="pad-box">
-                <p th:utext="#{success.acitve.info}">This course will remain active for one year.  For information on how to extend the end date, see link</p>
-            </div>
-        </div>
+    <h1 id="ui-id-1" class="rvt-ts-32 rvt-p-tb-sm" th:text="#{start.new.course}">Start A New Course</h1>
+    <div class="rvt-alert rvt-alert--success rvt-m-bottom-md rvt-width-xl" role="alert" aria-labelledby="success-alert-title">
+        <p class="rvt-alert__message" th:utext="#{success.info}" id="success-alert-title">Success: Your course has been successfully created!</p>
+    </div>
+    <div>
+        <dl id="course_data_list">
+            <dt id="course_name" th:text="#{success.course.name}">Course Name:</dt>
+            <dd id="course_name_info" th:text="${courseName}">IN INFO PROJECT MANAGEMENT 101</dd>
+            <dt id="short_name" th:text="#{success.short.name}">Short Name:</dt>
+            <dd id="short_name_info" th:text="${shortName}">PROJECT MANAGEMENT 101</dd>
+            <dt id="content_license" th:text="#{success.content.license}">Content License:</dt>
+            <dd id="content_license_info" th:text="${license}">Public</dd>
+            <dt id="dept_school_college" th:if="${accountName != null}" th:text="#{success.department.school.college}">Department, School, or College:</dt>
+            <dd id="dept_school_college_info" th:if="${accountName != null}" th:text="${accountName}">IN-INFO</dd>
+            <dt id="url" th:text="#{success.link}">Link:</dt>
+            <dd id="url_info"><a th:href="${url}" th:text="${url}" target="_blank">URL for course</a></dd>
+            <dt id="teacher" th:text="#{success.teacher}">Teacher:</dt>
+            <dd id="teacher_info" th:text="${displayName}">Jane Smith</dd>
+            <dt id="end_date" th:text="#{success.end.date}">End Date:</dt>
+            <dd id="end_date_info" th:text="${endDate}">7/13/2016</dd>
+        </dl>
+    </div>
+    <div class="rvt-alert rvt-alert--info rvt-m-top-md rvt-width-xl" role="alert" aria-labelledby="information-alert-title">
+        <p class="rvt-alert__message" th:utext="#{success.active.info}" id="information-alert-title">
+            This course will remain active for one year.  For information on how to extend the end date, see link
+        </p>
     </div>
 </div>
 </body>
