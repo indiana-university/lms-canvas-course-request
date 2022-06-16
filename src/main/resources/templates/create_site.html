@@ -105,9 +105,9 @@
         </div>
 
         <label for="node_location" th:text="#{create.department.school.college}" class="rvt-m-top-md">Department, School, or College</label>
-        <select id="node_location" name="node_location" class="rvt-width-lg" aria-describedby="node-note"
+        <select id="node_location" name="node_location" class="rvt-width-lg"
                 th:classappend="${nodeLocationError != null} ? 'rvt-validation-danger'"
-                th:aria-describedby="${nodeLocationError != null} ? 'academic_unit_error_text'"
+                th:aria-describedby="${nodeLocationError != null} ? 'academic_unit_error_text' : 'node-note'"
                 th:aria-invalid="${nodeLocationError != null} ? 'true'" />
             <option value="" th:text="#{academic.select.unit}">Select an academic unit...</option>
             <option th:each="account : ${accounts}" th:text="${account.name}" th:value="${account.id}" th:selected="${account.id == nodelocation}">AccountName</option>
