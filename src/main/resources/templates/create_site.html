@@ -30,7 +30,7 @@
         </ul>
     </div>
     <h1 id="ui-id-1" class="rvt-ts-32 rvt-p-tb-sm" th:text="#{start.new.course}">Start A New Course</h1>
-    <form id="new_course_form" method="post" action="create_site.html" th:action="@{|/app/provisionsite|}" accept-charset="UTF-8" aria-expanded="true" >
+    <form id="new_course_form" method="post" action="create_site.html" th:action="@{|/app/provisionsite|}" accept-charset="UTF-8">
         <div class="rvt-p-top-xs">
             <span th:text="#{complete.form.info}">Complete this form to create a new Canvas course.</span>
         </div>
@@ -105,9 +105,9 @@
         </div>
 
         <label for="node_location" th:text="#{create.department.school.college}" class="rvt-m-top-md">Department, School, or College</label>
-        <select id="node_location" name="node_location" class="rvt-width-lg" aria-describedby="node-note"
+        <select id="node_location" name="node_location" class="rvt-width-lg"
                 th:classappend="${nodeLocationError != null} ? 'rvt-validation-danger'"
-                th:aria-describedby="${nodeLocationError != null} ? 'academic_unit_error_text'"
+                th:aria-describedby="${nodeLocationError != null} ? 'academic_unit_error_text' : 'node-note'"
                 th:aria-invalid="${nodeLocationError != null} ? 'true'" />
             <option value="" th:text="#{academic.select.unit}">Select an academic unit...</option>
             <option th:each="account : ${accounts}" th:text="${account.name}" th:value="${account.id}" th:selected="${account.id == nodelocation}">AccountName</option>
