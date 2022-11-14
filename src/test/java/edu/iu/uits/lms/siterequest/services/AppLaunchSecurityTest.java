@@ -1,20 +1,21 @@
 package edu.iu.uits.lms.siterequest.services;
 
-import canvas.client.generated.api.AccountsApi;
-import canvas.client.generated.api.CanvasApi;
-import canvas.client.generated.api.CoursesApi;
-import canvas.client.generated.api.TermsApi;
-import canvas.client.generated.api.UsersApi;
+import edu.iu.uits.lms.canvas.config.CanvasClientTestConfig;
+import edu.iu.uits.lms.canvas.services.AccountService;
+import edu.iu.uits.lms.canvas.services.CanvasService;
+import edu.iu.uits.lms.canvas.services.CourseService;
+import edu.iu.uits.lms.canvas.services.TermService;
+import edu.iu.uits.lms.canvas.services.UserService;
+import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
+import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
 import edu.iu.uits.lms.siterequest.config.CourseTemplateMessageSender;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
 import edu.iu.uits.lms.siterequest.controller.SiteRequestController;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
-import iuonly.client.generated.api.FeatureAccessApi;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,8 +25,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -33,31 +32,29 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(SiteRequestController.class)
-@Import(ToolConfig.class)
-@ActiveProfiles("none")
+@WebMvcTest(value = SiteRequestController.class, properties = {"oauth.tokenprovider.url=http://foo"})
+@Import({ToolConfig.class, CanvasClientTestConfig.class, LtiClientTestConfig.class})
 public class AppLaunchSecurityTest {
 
    @Autowired
    private MockMvc mvc;
 
    @MockBean
-   private AccountsApi accountService = null;
+   private AccountService accountService = null;
    @MockBean
-   private CoursesApi courseService = null;
+   private CourseService courseService = null;
    @MockBean
    private ResourceBundleMessageSource messageSource = null;
    @MockBean
-   private CanvasApi canvasApi = null;
+   private CanvasService canvasService = null;
    @MockBean
-   private TermsApi termService = null;
+   private TermService termService = null;
    @MockBean
-   private UsersApi userService = null;
+   private UserService userService = null;
    @MockBean
-   private FeatureAccessApi featureAccessService = null;
-    @MockBean
-    private CourseTemplateMessageSender courseTemplateMessageSender = null;
+   private FeatureAccessServiceImpl featureAccessService = null;
+   @MockBean
+   private CourseTemplateMessageSender courseTemplateMessageSender = null;
 
    @MockBean
    private SiteRequestPropertyRepository siteRequestPropertyRepository = null;
@@ -72,7 +69,7 @@ public class AppLaunchSecurityTest {
    }
 
    @Test
-   @Ignore("Ignoring since this tool doesn't need a context to run")
+   @Disabled("Ignoring since this tool doesn't need a context to run")
    public void appAuthnWrongContextLaunch() throws Exception {
       LtiAuthenticationToken token = new LtiAuthenticationToken("userId",
             "asdf", "systemId",

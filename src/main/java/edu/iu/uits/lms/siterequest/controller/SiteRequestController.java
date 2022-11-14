@@ -1,31 +1,31 @@
 package edu.iu.uits.lms.siterequest.controller;
 
-import canvas.client.generated.api.AccountsApi;
-import canvas.client.generated.api.CanvasApi;
-import canvas.client.generated.api.CoursesApi;
-import canvas.client.generated.api.TermsApi;
-import canvas.client.generated.api.UsersApi;
-import canvas.client.generated.model.Account;
-import canvas.client.generated.model.CanvasTerm;
-import canvas.client.generated.model.Course;
-import canvas.client.generated.model.CourseCreateWrapper;
-import canvas.client.generated.model.Enrollment;
-import canvas.client.generated.model.EnrollmentCreateWrapper;
-import canvas.client.generated.model.FeatureFlag;
-import canvas.client.generated.model.License;
-import canvas.client.generated.model.Profile;
-import canvas.client.generated.model.Section;
-import canvas.client.generated.model.SectionCreateWrapper;
-import canvas.client.generated.model.User;
-import canvas.helpers.CanvasDateFormatUtil;
-import canvas.helpers.CourseHelper;
+import edu.iu.uits.lms.canvas.helpers.CanvasDateFormatUtil;
+import edu.iu.uits.lms.canvas.helpers.CourseHelper;
+import edu.iu.uits.lms.canvas.model.Account;
+import edu.iu.uits.lms.canvas.model.CanvasTerm;
+import edu.iu.uits.lms.canvas.model.Course;
+import edu.iu.uits.lms.canvas.model.CourseCreateWrapper;
+import edu.iu.uits.lms.canvas.model.Enrollment;
+import edu.iu.uits.lms.canvas.model.EnrollmentCreateWrapper;
+import edu.iu.uits.lms.canvas.model.FeatureFlag;
+import edu.iu.uits.lms.canvas.model.License;
+import edu.iu.uits.lms.canvas.model.Profile;
+import edu.iu.uits.lms.canvas.model.Section;
+import edu.iu.uits.lms.canvas.model.SectionCreateWrapper;
+import edu.iu.uits.lms.canvas.model.User;
+import edu.iu.uits.lms.canvas.services.AccountService;
+import edu.iu.uits.lms.canvas.services.CanvasService;
+import edu.iu.uits.lms.canvas.services.CourseService;
+import edu.iu.uits.lms.canvas.services.TermService;
+import edu.iu.uits.lms.canvas.services.UserService;
 import edu.iu.uits.lms.common.coursetemplates.CourseTemplateMessage;
+import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
 import edu.iu.uits.lms.lti.controller.LtiAuthenticationTokenAwareController;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
 import edu.iu.uits.lms.siterequest.config.CourseTemplateMessageSender;
 import edu.iu.uits.lms.siterequest.model.SiteRequestProperty;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
-import iuonly.client.generated.api.FeatureAccessApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -48,19 +48,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SiteRequestController extends LtiAuthenticationTokenAwareController {
     @Autowired
-    private AccountsApi accountService = null;
+    private AccountService accountService = null;
     @Autowired
-    private CoursesApi courseService = null;
+    private CourseService courseService = null;
     @Autowired
     private ResourceBundleMessageSource messageSource = null;
     @Autowired
-    private CanvasApi canvasApi = null;
+    private CanvasService canvasService = null;
     @Autowired
-    private TermsApi termService = null;
+    private TermService termService = null;
     @Autowired
-    private UsersApi userService = null;
+    private UserService userService = null;
     @Autowired
-    private FeatureAccessApi featureAccessService = null;
+    private FeatureAccessServiceImpl featureAccessService = null;
     @Autowired
     private CourseTemplateMessageSender courseTemplateMessageSender = null;
     @Autowired
@@ -174,19 +174,19 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
                 CanvasTerm term = termService.getTermById(createdCourse.getEnrollmentTermId());
                 sisTermId = term.getSisTermId();
             }
-            CourseTemplateMessage ctm = new CourseTemplateMessage(createdCourse.getId(), sisTermId, createdCourse.getAccountId(), createdCourse.getSisCourseId(), false);
-            courseTemplateMessageSender.send(ctm);
+//            CourseTemplateMessage ctm = new CourseTemplateMessage(createdCourse.getId(), sisTermId, createdCourse.getAccountId(), createdCourse.getSisCourseId(), false);
+//            courseTemplateMessageSender.send(ctm);
         }
 
         // Set the features on the newly created course
-        if (featureAccessService.isFeatureEnabledForAccount(FEATURE_ENABLE_FEATURES_FOR_MANUAL_COURSES, canvasApi.getRootAccount(), null)) {
+        if (featureAccessService.isFeatureEnabledForAccount(FEATURE_ENABLE_FEATURES_FOR_MANUAL_COURSES, canvasService.getRootAccount(), null)) {
             checkAndSetCourseFeatures(createdCourse);
         }
 
         // create the section
         Section section = new Section();
         section.setName(createdCourse.getName());
-        section.setCourseId(createdCourse.getId());
+        section.setCourse_id(createdCourse.getId());
         SectionCreateWrapper scw = new SectionCreateWrapper();
         scw.setCourseSection(section);
         Section newSection = courseService.createCourseSection(scw);
@@ -245,7 +245,7 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
         model.addAttribute("endDate", endDateDisplay);
 
         // Example: https://iu.instructure.com/courses/123456
-        model.addAttribute("url", canvasApi.getBaseUrl() + "/courses/" + createdCourse.getId());
+        model.addAttribute("url", canvasService.getBaseUrl() + "/courses/" + createdCourse.getId());
         model.addAttribute("displayName", canvasUser.getName());
 
         Account account = accountService.getAccount(createdCourse.getAccountId());
