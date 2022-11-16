@@ -14,4 +14,5 @@ public class ToolConfig {
    private String version;
    private String env;
    private String courseTemplateQueueName;
+   private String templateHostingUrl;
 }

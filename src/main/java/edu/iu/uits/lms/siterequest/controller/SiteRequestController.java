@@ -19,11 +19,16 @@ import edu.iu.uits.lms.canvas.services.CanvasService;
 import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.canvas.services.TermService;
 import edu.iu.uits.lms.canvas.services.UserService;
-import edu.iu.uits.lms.common.coursetemplates.CourseTemplateMessage;
+import edu.iu.uits.lms.iuonly.model.HierarchyResource;
+import edu.iu.uits.lms.iuonly.model.StoredFile;
+import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
+import edu.iu.uits.lms.iuonly.services.CourseTemplatingService;
 import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
-import edu.iu.uits.lms.lti.controller.LtiAuthenticationTokenAwareController;
-import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
-import edu.iu.uits.lms.siterequest.config.CourseTemplateMessageSender;
+import edu.iu.uits.lms.iuonly.services.HierarchyResourceException;
+import edu.iu.uits.lms.iuonly.services.TemplateAuditService;
+import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
+import edu.iu.uits.lms.lti.service.OidcTokenUtils;
+import edu.iu.uits.lms.siterequest.config.ToolConfig;
 import edu.iu.uits.lms.siterequest.model.SiteRequestProperty;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +39,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
+import java.text.MessageFormat;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -46,7 +54,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/app")
 @Slf4j
-public class SiteRequestController extends LtiAuthenticationTokenAwareController {
+public class SiteRequestController extends OidcTokenAwareController {
     @Autowired
     private AccountService accountService = null;
     @Autowired
@@ -62,17 +70,30 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
     @Autowired
     private FeatureAccessServiceImpl featureAccessService = null;
     @Autowired
-    private CourseTemplateMessageSender courseTemplateMessageSender = null;
-    @Autowired
     private SiteRequestPropertyRepository siteRequestPropertyRepository = null;
+    @Autowired
+    private HierarchyResourceRepository hierarchyResourceRepository = null;
+    @Autowired
+    private ToolConfig toolConfig = null;
+    @Autowired
+    private CourseTemplatingService courseTemplatingService = null;
+    @Autowired
+    private TemplateAuditService templateAuditService = null;
 
     private static final String FEATURE_APPLY_TEMPLATE_FOR_MANUAL_COURSES = "coursetemplating.manualCourses";
     private static final String FEATURE_ENABLE_FEATURES_FOR_MANUAL_COURSES = "manualCourses.enableFeatureSetting";
 
+    @RequestMapping("/launch")
+    public String launch(Model model, SecurityContextHolderAwareRequestWrapper request) {
+        OidcAuthenticationToken token = getTokenWithoutContext();
+        return createSite(model);
+    }
+
     @RequestMapping("/createsite")
     public String createSite(Model model) {
-        LtiAuthenticationToken token = getTokenWithoutContext();
-        String username = (String)token.getPrincipal();
+        OidcAuthenticationToken token = getTokenWithoutContext();
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+        String username = oidcTokenUtils.getUserLoginId();
 
         List<Course> instructorCourseList = courseService.getCoursesTaughtBy(username, false, false, false);
 
@@ -99,10 +120,11 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
     @RequestMapping("/provisionsite")
     public String createSite(Model model, @RequestParam("course_name") String courseName,
                              @RequestParam("short_name") String shortName, @RequestParam("course_license") String courseLicense,
-                             @RequestParam("node_location") String nodeLocation, SecurityContextHolderAwareRequestWrapper request) {
+                             @RequestParam("node_location") String nodeLocation, SecurityContextHolderAwareRequestWrapper request) throws HierarchyResourceException {
         // make sure they're still logged in!
-        LtiAuthenticationToken token = getTokenWithoutContext();
-        String username = (String)token.getPrincipal();
+        OidcAuthenticationToken token = getTokenWithoutContext();
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+        String username = oidcTokenUtils.getUserLoginId();
 
         if (courseName.isEmpty() || shortName.isEmpty() || courseLicense.isEmpty() || nodeLocation.isEmpty()) {
             // check specifically to know which error messages to display
@@ -174,8 +196,17 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
                 CanvasTerm term = termService.getTermById(createdCourse.getEnrollmentTermId());
                 sisTermId = term.getSisTermId();
             }
-//            CourseTemplateMessage ctm = new CourseTemplateMessage(createdCourse.getId(), sisTermId, createdCourse.getAccountId(), createdCourse.getSisCourseId(), false);
-//            courseTemplateMessageSender.send(ctm);
+
+            HierarchyResource templateForCourse = getClosestDefaultTemplateForCourse(createdCourse);
+            StoredFile storedFile = templateForCourse.getStoredFile();
+            String baseUrl = toolConfig.getTemplateHostingUrl();
+
+            Account account = accountService.getAccount(createdCourse.getAccountId());
+
+            String url = MessageFormat.format("{0}/rest/iu/file/download/{1}/{2}", baseUrl, storedFile.getId(), storedFile.getDisplayName());
+            log.debug("Course template (" + templateForCourse.getId() + ") url: " + url);
+            courseTemplatingService.checkAndDoImsCcImport(createdCourse.getId(), sisTermId, account.getId(), createdCourse.getSisCourseId(), url, false);
+            templateAuditService.audit(createdCourse.getId(), templateForCourse, "SITE_REQUEST", username);
         }
 
         // Set the features on the newly created course
@@ -316,5 +347,40 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
                 }
             }
         }
+    }
+
+    // Maybe centralize this?
+    private HierarchyResource getClosestDefaultTemplateForCourse(Course course) throws HierarchyResourceException {
+        String bodyText = "";
+        if (course!=null) {
+            Account account = accountService.getAccount(course.getAccountId());
+            if (account!=null) {
+                List<HierarchyResource> hierarchyResources = hierarchyResourceRepository.findByNodeAndDefaultTemplateTrue(account.getName());
+                if (hierarchyResources != null && hierarchyResources.size() == 1) {
+                    return hierarchyResources.get(0);
+                } else {
+                    // specific account doesn't exist in our table, let's see if there's a parent
+                    List<String> relatedAccountNames = new ArrayList<>();
+                    accountService.getParentAccounts(account.getId()).forEach(parentAccount -> relatedAccountNames.add(parentAccount.getName()));
+
+                    for (String accountName : relatedAccountNames) {
+                        List<HierarchyResource> parentHierarchyResources = hierarchyResourceRepository.findByNodeAndDefaultTemplateTrue(accountName);
+                        if (parentHierarchyResources != null && parentHierarchyResources.size() == 1) {
+                            return parentHierarchyResources.get(0);
+                        }
+                    }
+                }
+
+                // if we're here, could not find a record in our table
+                bodyText = "No node found for " + course.getId() + " (" + course.getSisCourseId() + ")";
+            } else {
+                bodyText = "Could not find account!";
+            }
+        } else {
+            bodyText = "Course does not exist!";
+        }
+
+        // if we made it here, it did not find something along the way
+        throw new HierarchyResourceException(bodyText);
     }
 }
