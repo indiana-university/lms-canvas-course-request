@@ -36,7 +36,6 @@ spring:
 siterequest:
   version: @app.version@
   env: ${app.env}
-  courseTemplateQueueName: coursetemplate_${app.env}
 
 server:
   error:
