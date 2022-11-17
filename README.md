@@ -1,5 +1,5 @@
-# ess-lms-canvas-siterequest
-App for posting scores, feedback, or other types of data for students to view.
+# lms-siterequest
+LTI tool for requesting new, non SIS Courses.
 
 ## Running standalone
 Add env vars or system properties as desired.

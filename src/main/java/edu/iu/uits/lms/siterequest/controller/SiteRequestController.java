@@ -1,9 +1,12 @@
 package edu.iu.uits.lms.siterequest.controller;
 
 import edu.iu.uits.lms.canvas.helpers.CanvasDateFormatUtil;
+import edu.iu.uits.lms.canvas.helpers.ContentMigrationHelper;
 import edu.iu.uits.lms.canvas.helpers.CourseHelper;
 import edu.iu.uits.lms.canvas.model.Account;
 import edu.iu.uits.lms.canvas.model.CanvasTerm;
+import edu.iu.uits.lms.canvas.model.ContentMigration;
+import edu.iu.uits.lms.canvas.model.ContentMigrationCreateWrapper;
 import edu.iu.uits.lms.canvas.model.Course;
 import edu.iu.uits.lms.canvas.model.CourseCreateWrapper;
 import edu.iu.uits.lms.canvas.model.Enrollment;
@@ -16,13 +19,13 @@ import edu.iu.uits.lms.canvas.model.SectionCreateWrapper;
 import edu.iu.uits.lms.canvas.model.User;
 import edu.iu.uits.lms.canvas.services.AccountService;
 import edu.iu.uits.lms.canvas.services.CanvasService;
+import edu.iu.uits.lms.canvas.services.ContentMigrationService;
 import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.canvas.services.TermService;
 import edu.iu.uits.lms.canvas.services.UserService;
 import edu.iu.uits.lms.iuonly.model.HierarchyResource;
 import edu.iu.uits.lms.iuonly.model.StoredFile;
 import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
-import edu.iu.uits.lms.iuonly.services.CourseTemplatingService;
 import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
 import edu.iu.uits.lms.iuonly.services.HierarchyResourceException;
 import edu.iu.uits.lms.iuonly.services.TemplateAuditService;
@@ -39,6 +42,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import java.text.MessageFormat;
@@ -76,20 +80,14 @@ public class SiteRequestController extends OidcTokenAwareController {
     @Autowired
     private ToolConfig toolConfig = null;
     @Autowired
-    private CourseTemplatingService courseTemplatingService = null;
-    @Autowired
     private TemplateAuditService templateAuditService = null;
+    @Autowired
+    private ContentMigrationService contentMigrationService = null;
 
     private static final String FEATURE_APPLY_TEMPLATE_FOR_MANUAL_COURSES = "coursetemplating.manualCourses";
     private static final String FEATURE_ENABLE_FEATURES_FOR_MANUAL_COURSES = "manualCourses.enableFeatureSetting";
 
-    @RequestMapping("/launch")
-    public String launch(Model model, SecurityContextHolderAwareRequestWrapper request) {
-        OidcAuthenticationToken token = getTokenWithoutContext();
-        return createSite(model);
-    }
-
-    @RequestMapping("/createsite")
+    @RequestMapping({"/createsite", "/launch"})
     public String createSite(Model model) {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
@@ -120,7 +118,7 @@ public class SiteRequestController extends OidcTokenAwareController {
     @RequestMapping("/provisionsite")
     public String createSite(Model model, @RequestParam("course_name") String courseName,
                              @RequestParam("short_name") String shortName, @RequestParam("course_license") String courseLicense,
-                             @RequestParam("node_location") String nodeLocation, SecurityContextHolderAwareRequestWrapper request) throws HierarchyResourceException {
+                             @RequestParam("node_location") String nodeLocation, SecurityContextHolderAwareRequestWrapper request) {
         // make sure they're still logged in!
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
@@ -188,24 +186,33 @@ public class SiteRequestController extends OidcTokenAwareController {
 
         // Apply the template to the newly created course
         if (featureAccessService.isFeatureEnabledForAccount(FEATURE_APPLY_TEMPLATE_FOR_MANUAL_COURSES, createdCourse.getAccountId(), parentAccountIds)) {
-            //When a course is first created, canvas does not return anything for the term, so need to look it up if it's not provided
-            String sisTermId = null;
-            if (createdCourse.getTerm() != null) {
-                sisTermId = createdCourse.getTerm().getSisTermId();
-            } else {
-                CanvasTerm term = termService.getTermById(createdCourse.getEnrollmentTermId());
-                sisTermId = term.getSisTermId();
+            HierarchyResource templateForCourse = null;
+            try {
+                templateForCourse = getClosestDefaultTemplateForCourse(createdCourse);
+            } catch (HierarchyResourceException e) {
+                model.addAttribute("courseCreationError", true);
+                return submissionFailure(model);
             }
 
-            HierarchyResource templateForCourse = getClosestDefaultTemplateForCourse(createdCourse);
             StoredFile storedFile = templateForCourse.getStoredFile();
             String baseUrl = toolConfig.getTemplateHostingUrl();
-
-            Account account = accountService.getAccount(createdCourse.getAccountId());
+            // Use the current application as the template host if no other has been configured.
+            if (baseUrl == null) {
+                baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            }
 
             String url = MessageFormat.format("{0}/rest/iu/file/download/{1}/{2}", baseUrl, storedFile.getId(), storedFile.getDisplayName());
             log.debug("Course template (" + templateForCourse.getId() + ") url: " + url);
-            courseTemplatingService.checkAndDoImsCcImport(createdCourse.getId(), sisTermId, account.getId(), createdCourse.getSisCourseId(), url, false);
+
+            ContentMigrationCreateWrapper wrapper = new ContentMigrationCreateWrapper();
+            ContentMigrationCreateWrapper.Settings settings = new ContentMigrationCreateWrapper.Settings();
+            wrapper.setMigrationType(ContentMigrationHelper.MIGRATION_TYPE_CC);
+            wrapper.setSettings(settings);
+
+            settings.setFileUrl(url);
+
+            ContentMigration cm = contentMigrationService.initiateContentMigration(createdCourse.getId(), null, wrapper);
+            log.info("{}", cm);
             templateAuditService.audit(createdCourse.getId(), templateForCourse, "SITE_REQUEST", username);
         }
 

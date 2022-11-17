@@ -10,7 +10,6 @@ import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import edu.iu.uits.lms.lti.config.TestUtils;
-import edu.iu.uits.lms.siterequest.config.CourseTemplateMessageSender;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
 import edu.iu.uits.lms.siterequest.controller.SiteRequestController;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
@@ -53,9 +52,6 @@ public class AppLaunchSecurityTest {
    private UserService userService = null;
    @MockBean
    private FeatureAccessServiceImpl featureAccessService = null;
-   @MockBean
-   private CourseTemplateMessageSender courseTemplateMessageSender = null;
-
    @MockBean
    private SiteRequestPropertyRepository siteRequestPropertyRepository = null;
 
