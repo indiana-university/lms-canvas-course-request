@@ -1,31 +1,72 @@
 package edu.iu.uits.lms.siterequest.controller;
 
-import canvas.client.generated.api.AccountsApi;
-import canvas.client.generated.api.CanvasApi;
-import canvas.client.generated.api.CoursesApi;
-import canvas.client.generated.api.TermsApi;
-import canvas.client.generated.api.UsersApi;
-import canvas.client.generated.model.Account;
-import canvas.client.generated.model.CanvasTerm;
-import canvas.client.generated.model.Course;
-import canvas.client.generated.model.CourseCreateWrapper;
-import canvas.client.generated.model.Enrollment;
-import canvas.client.generated.model.EnrollmentCreateWrapper;
-import canvas.client.generated.model.FeatureFlag;
-import canvas.client.generated.model.License;
-import canvas.client.generated.model.Profile;
-import canvas.client.generated.model.Section;
-import canvas.client.generated.model.SectionCreateWrapper;
-import canvas.client.generated.model.User;
-import canvas.helpers.CanvasDateFormatUtil;
-import canvas.helpers.CourseHelper;
-import edu.iu.uits.lms.common.coursetemplates.CourseTemplateMessage;
-import edu.iu.uits.lms.lti.controller.LtiAuthenticationTokenAwareController;
-import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
-import edu.iu.uits.lms.siterequest.config.CourseTemplateMessageSender;
+/*-
+ * #%L
+ * siterequest
+ * %%
+ * Copyright (C) 2015 - 2022 Indiana University
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the Indiana University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
+import edu.iu.uits.lms.canvas.helpers.CanvasDateFormatUtil;
+import edu.iu.uits.lms.canvas.helpers.ContentMigrationHelper;
+import edu.iu.uits.lms.canvas.helpers.CourseHelper;
+import edu.iu.uits.lms.canvas.model.Account;
+import edu.iu.uits.lms.canvas.model.CanvasTerm;
+import edu.iu.uits.lms.canvas.model.ContentMigration;
+import edu.iu.uits.lms.canvas.model.ContentMigrationCreateWrapper;
+import edu.iu.uits.lms.canvas.model.Course;
+import edu.iu.uits.lms.canvas.model.CourseCreateWrapper;
+import edu.iu.uits.lms.canvas.model.Enrollment;
+import edu.iu.uits.lms.canvas.model.EnrollmentCreateWrapper;
+import edu.iu.uits.lms.canvas.model.FeatureFlag;
+import edu.iu.uits.lms.canvas.model.License;
+import edu.iu.uits.lms.canvas.model.Profile;
+import edu.iu.uits.lms.canvas.model.Section;
+import edu.iu.uits.lms.canvas.model.SectionCreateWrapper;
+import edu.iu.uits.lms.canvas.model.User;
+import edu.iu.uits.lms.canvas.services.AccountService;
+import edu.iu.uits.lms.canvas.services.CanvasService;
+import edu.iu.uits.lms.canvas.services.ContentMigrationService;
+import edu.iu.uits.lms.canvas.services.CourseService;
+import edu.iu.uits.lms.canvas.services.TermService;
+import edu.iu.uits.lms.canvas.services.UserService;
+import edu.iu.uits.lms.iuonly.model.HierarchyResource;
+import edu.iu.uits.lms.iuonly.model.StoredFile;
+import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
+import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
+import edu.iu.uits.lms.iuonly.services.HierarchyResourceException;
+import edu.iu.uits.lms.iuonly.services.TemplateAuditService;
+import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
+import edu.iu.uits.lms.lti.service.OidcTokenUtils;
+import edu.iu.uits.lms.siterequest.config.ToolConfig;
 import edu.iu.uits.lms.siterequest.model.SiteRequestProperty;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
-import iuonly.client.generated.api.FeatureAccessApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -34,8 +75,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
+import java.text.MessageFormat;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -46,33 +91,40 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/app")
 @Slf4j
-public class SiteRequestController extends LtiAuthenticationTokenAwareController {
+public class SiteRequestController extends OidcTokenAwareController {
     @Autowired
-    private AccountsApi accountService = null;
+    private AccountService accountService = null;
     @Autowired
-    private CoursesApi courseService = null;
+    private CourseService courseService = null;
     @Autowired
     private ResourceBundleMessageSource messageSource = null;
     @Autowired
-    private CanvasApi canvasApi = null;
+    private CanvasService canvasService = null;
     @Autowired
-    private TermsApi termService = null;
+    private TermService termService = null;
     @Autowired
-    private UsersApi userService = null;
+    private UserService userService = null;
     @Autowired
-    private FeatureAccessApi featureAccessService = null;
-    @Autowired
-    private CourseTemplateMessageSender courseTemplateMessageSender = null;
+    private FeatureAccessServiceImpl featureAccessService = null;
     @Autowired
     private SiteRequestPropertyRepository siteRequestPropertyRepository = null;
+    @Autowired
+    private HierarchyResourceRepository hierarchyResourceRepository = null;
+    @Autowired
+    private ToolConfig toolConfig = null;
+    @Autowired
+    private TemplateAuditService templateAuditService = null;
+    @Autowired
+    private ContentMigrationService contentMigrationService = null;
 
     private static final String FEATURE_APPLY_TEMPLATE_FOR_MANUAL_COURSES = "coursetemplating.manualCourses";
     private static final String FEATURE_ENABLE_FEATURES_FOR_MANUAL_COURSES = "manualCourses.enableFeatureSetting";
 
-    @RequestMapping("/createsite")
+    @RequestMapping({"/createsite", "/launch"})
     public String createSite(Model model) {
-        LtiAuthenticationToken token = getTokenWithoutContext();
-        String username = (String)token.getPrincipal();
+        OidcAuthenticationToken token = getTokenWithoutContext();
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+        String username = oidcTokenUtils.getUserLoginId();
 
         List<Course> instructorCourseList = courseService.getCoursesTaughtBy(username, false, false, false);
 
@@ -101,8 +153,9 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
                              @RequestParam("short_name") String shortName, @RequestParam("course_license") String courseLicense,
                              @RequestParam("node_location") String nodeLocation, SecurityContextHolderAwareRequestWrapper request) {
         // make sure they're still logged in!
-        LtiAuthenticationToken token = getTokenWithoutContext();
-        String username = (String)token.getPrincipal();
+        OidcAuthenticationToken token = getTokenWithoutContext();
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+        String username = oidcTokenUtils.getUserLoginId();
 
         if (courseName.isEmpty() || shortName.isEmpty() || courseLicense.isEmpty() || nodeLocation.isEmpty()) {
             // check specifically to know which error messages to display
@@ -166,27 +219,45 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
 
         // Apply the template to the newly created course
         if (featureAccessService.isFeatureEnabledForAccount(FEATURE_APPLY_TEMPLATE_FOR_MANUAL_COURSES, createdCourse.getAccountId(), parentAccountIds)) {
-            //When a course is first created, canvas does not return anything for the term, so need to look it up if it's not provided
-            String sisTermId = null;
-            if (createdCourse.getTerm() != null) {
-                sisTermId = createdCourse.getTerm().getSisTermId();
-            } else {
-                CanvasTerm term = termService.getTermById(createdCourse.getEnrollmentTermId());
-                sisTermId = term.getSisTermId();
+            HierarchyResource templateForCourse = null;
+            try {
+                templateForCourse = getClosestDefaultTemplateForCourse(createdCourse);
+            } catch (HierarchyResourceException e) {
+                model.addAttribute("courseCreationError", true);
+                return submissionFailure(model);
             }
-            CourseTemplateMessage ctm = new CourseTemplateMessage(createdCourse.getId(), sisTermId, createdCourse.getAccountId(), createdCourse.getSisCourseId(), false);
-            courseTemplateMessageSender.send(ctm);
+
+            StoredFile storedFile = templateForCourse.getStoredFile();
+            String baseUrl = toolConfig.getTemplateHostingUrl();
+            // Use the current application as the template host if no other has been configured.
+            if (baseUrl == null) {
+                baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            }
+
+            String url = MessageFormat.format("{0}/rest/iu/file/download/{1}/{2}", baseUrl, storedFile.getId(), storedFile.getDisplayName());
+            log.debug("Course template (" + templateForCourse.getId() + ") url: " + url);
+
+            ContentMigrationCreateWrapper wrapper = new ContentMigrationCreateWrapper();
+            ContentMigrationCreateWrapper.Settings settings = new ContentMigrationCreateWrapper.Settings();
+            wrapper.setMigrationType(ContentMigrationHelper.MIGRATION_TYPE_CC);
+            wrapper.setSettings(settings);
+
+            settings.setFileUrl(url);
+
+            ContentMigration cm = contentMigrationService.initiateContentMigration(createdCourse.getId(), null, wrapper);
+            log.info("{}", cm);
+            templateAuditService.audit(createdCourse.getId(), templateForCourse, "SITE_REQUEST", username);
         }
 
         // Set the features on the newly created course
-        if (featureAccessService.isFeatureEnabledForAccount(FEATURE_ENABLE_FEATURES_FOR_MANUAL_COURSES, canvasApi.getRootAccount(), null)) {
+        if (featureAccessService.isFeatureEnabledForAccount(FEATURE_ENABLE_FEATURES_FOR_MANUAL_COURSES, canvasService.getRootAccount(), null)) {
             checkAndSetCourseFeatures(createdCourse);
         }
 
         // create the section
         Section section = new Section();
         section.setName(createdCourse.getName());
-        section.setCourseId(createdCourse.getId());
+        section.setCourse_id(createdCourse.getId());
         SectionCreateWrapper scw = new SectionCreateWrapper();
         scw.setCourseSection(section);
         Section newSection = courseService.createCourseSection(scw);
@@ -245,7 +316,7 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
         model.addAttribute("endDate", endDateDisplay);
 
         // Example: https://iu.instructure.com/courses/123456
-        model.addAttribute("url", canvasApi.getBaseUrl() + "/courses/" + createdCourse.getId());
+        model.addAttribute("url", canvasService.getBaseUrl() + "/courses/" + createdCourse.getId());
         model.addAttribute("displayName", canvasUser.getName());
 
         Account account = accountService.getAccount(createdCourse.getAccountId());
@@ -316,5 +387,40 @@ public class SiteRequestController extends LtiAuthenticationTokenAwareController
                 }
             }
         }
+    }
+
+    // Maybe centralize this?
+    private HierarchyResource getClosestDefaultTemplateForCourse(Course course) throws HierarchyResourceException {
+        String bodyText = "";
+        if (course!=null) {
+            Account account = accountService.getAccount(course.getAccountId());
+            if (account!=null) {
+                List<HierarchyResource> hierarchyResources = hierarchyResourceRepository.findByNodeAndDefaultTemplateTrue(account.getName());
+                if (hierarchyResources != null && hierarchyResources.size() == 1) {
+                    return hierarchyResources.get(0);
+                } else {
+                    // specific account doesn't exist in our table, let's see if there's a parent
+                    List<String> relatedAccountNames = new ArrayList<>();
+                    accountService.getParentAccounts(account.getId()).forEach(parentAccount -> relatedAccountNames.add(parentAccount.getName()));
+
+                    for (String accountName : relatedAccountNames) {
+                        List<HierarchyResource> parentHierarchyResources = hierarchyResourceRepository.findByNodeAndDefaultTemplateTrue(accountName);
+                        if (parentHierarchyResources != null && parentHierarchyResources.size() == 1) {
+                            return parentHierarchyResources.get(0);
+                        }
+                    }
+                }
+
+                // if we're here, could not find a record in our table
+                bodyText = "No node found for " + course.getId() + " (" + course.getSisCourseId() + ")";
+            } else {
+                bodyText = "Could not find account!";
+            }
+        } else {
+            bodyText = "Course does not exist!";
+        }
+
+        // if we made it here, it did not find something along the way
+        throw new HierarchyResourceException(bodyText);
     }
 }

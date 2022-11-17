@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.siterequest.model;
+package edu.iu.uits.lms.siterequest.config;
 
 /*-
  * #%L
@@ -33,60 +33,34 @@ package edu.iu.uits.lms.siterequest.model;
  * #L%
  */
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.OAuthFlow;
+import io.swagger.v3.oas.annotations.security.OAuthFlows;
+import io.swagger.v3.oas.annotations.security.OAuthScope;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.springdoc.core.GroupedOpenApi;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
+@Profile("swagger")
+@Configuration
+@OpenAPIDefinition(info = @Info(title = "Site Request REST Endpoints", version = "${siterequest.version}"))
+@SecurityScheme(name = "security_auth_siterequest", type = SecuritySchemeType.OAUTH2,
+      flows = @OAuthFlows(authorizationCode = @OAuthFlow(
+            authorizationUrl = "${springdoc.oAuthFlow.authorizationUrl}",
+            scopes = {@OAuthScope(name = "lms:rest")},
+            tokenUrl = "${springdoc.oAuthFlow.tokenUrl}")))
+public class SwaggerConfig {
 
-/**
- * Created by chmaurer on 2/6/15.
- */
-@Entity
-@Table(name = "SITEREQUEST_PROPERTIES")
-@SequenceGenerator(name = "SITEREQUEST_PROPERTIES_ID_SEQ", sequenceName = "SITEREQUEST_PROPERTIES_ID_SEQ", allocationSize = 1)
-@Data
-@RequiredArgsConstructor
-@NoArgsConstructor
-public class SiteRequestProperty implements Serializable {
-
-    @Id
-    @Column(name = "SITEREQUEST_PROPERTIES_ID")
-    @GeneratedValue(generator = "SITEREQUEST_PROPERTIES_ID_SEQ")
-    private Long id;
-
-    @NonNull
-    @Column(name = "prop_key")
-    private String key;
-
-    @NonNull
-    @Column(name = "prop_value")
-    private String value;
-
-    /**
-     * The property value contains a comma delimited list.  Return is as a list of strings
-     * @return List of parsed values
-     */
-    public List<String> getPropValueAsList() {
-        String[] values = value.split(",");
-        return Arrays.asList(values);
-    }
-
-    /**
-     * The property value contains a comma delimited list.  Return is as a String[]
-     * @return List of parsed values
-     */
-    public String[] getPropValueAsArray() {
-        return value.split(",");
-    }
+   @Bean
+   public GroupedOpenApi groupedOpenApi() {
+      return GroupedOpenApi.builder()
+            .group("siterequest")
+            .packagesToScan("edu.iu.uits.lms.siterequest.controller.rest")
+            .build();
+   }
 
 }

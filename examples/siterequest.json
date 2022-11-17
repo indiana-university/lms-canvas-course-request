@@ -1,0 +1,27 @@
+{
+  "title": "Start a New Course",
+  "description": "Tool used to create a new site in Canvas. The \"Start a New Course\" feature is only available if you have the Teacher, Co-Instructor, or Librarian role in at least one Canvas course.",
+  "oidc_initiation_url": "http://localhost:8080/lti/login_initiation/lms_siterequest",
+  "target_link_uri": "http://localhost:8080/app/launch",
+  "extensions": [
+    {
+      "domain": "localhost",
+      "platform": "canvas.instructure.com",
+      "privacy_level": "public",
+      "not_selectable": true,
+      "settings": {
+        "placements": [
+          {
+            "enabled": true,
+            "placement": "user_navigation",
+            "message_type": "LtiResourceLinkRequest"
+          }
+        ]
+      }
+    }
+  ],
+  "public_jwk_url": "http://localhost:8080/.well-known/jwks.json",
+  "custom_fields": {
+    "canvas_user_login_id": "$Canvas.user.loginId"
+  }
+}
