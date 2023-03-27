@@ -4,7 +4,7 @@ package edu.iu.uits.lms.siterequest.services.swagger;
  * #%L
  * siterequest
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2023 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,18 +33,12 @@ package edu.iu.uits.lms.siterequest.services.swagger;
  * #L%
  */
 
-import edu.iu.uits.lms.lti.swagger.AbstractSwaggerUiCustomTest;
-import edu.iu.uits.lms.siterequest.WebApplication;
-import edu.iu.uits.lms.siterequest.config.SecurityConfig;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.List;
-
-@SpringBootTest(classes = {WebApplication.class, SecurityConfig.class, SwaggerSiteRequestTestConfig.class})
-public class SwaggerUiCustomTest extends AbstractSwaggerUiCustomTest {
-
-   @Override
-   protected List<String> getEmbeddedSwaggerToolPaths() {
-      return SwaggerTestUtil.getEmbeddedSwaggerToolPaths(super.getEmbeddedSwaggerToolPaths());
-   }
+@TestConfiguration
+public class SwaggerSiteRequestTestConfig {
+    @MockBean
+    private BufferingApplicationStartup bufferingApplicationStartup;
 }

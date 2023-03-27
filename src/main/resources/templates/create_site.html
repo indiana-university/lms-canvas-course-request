@@ -44,20 +44,20 @@
 
 <div layout:fragment="content">
     <!-- Summary error list w/ links -->
-    <div id="msgErrors" tabindex="-1" class="rvt-alert rvt-alert--danger rvt-m-top-sm rvt-width-xl" role="alert"
+    <div id="msgErrors" tabindex="-1" class="rvt-alert rvt-alert--danger [ rvt-m-top-sm ] rvt-width-xl" role="alert" aria-labelledby="msgErrorsTitle" data-rvt-alert="error"
          th:if="${courseNameError != null} or ${shortNameError != null} or ${courseLicenseError != null} or ${nodeLocationError != null}">
-        <h1 id="msgErrorsTitle" class="rvt-alert__title">Errors:</h1>
-        <ul>
-            <li id="missingCourseName" class="rvt-alert-list__item" th:if="${courseNameError != null}">
+        <div id="msgErrorsTitle" class="rvt-alert__title">Errors:</div>
+        <ul class="rvt-alert__message">
+            <li id="missingCourseName" th:if="${courseNameError != null}">
                 <a href="javascript:document.getElementById('course_name').focus()" id="msgMissingCourseName" class="rvt-alert__message" th:text="${courseNameError}">You must select at least one recipient before sending the message.</a>
             </li>
-            <li id="missingShortName" class="rvt-alert-list__item" th:if="${shortNameError != null}">
+            <li id="missingShortName" th:if="${shortNameError != null}">
                 <a href="javascript:document.getElementById('short_name').focus()" id="msgMissingShortName" class="rvt-alert__message" th:text="${shortNameError}">Missing subject</a>
             </li>
-            <li id="missingCourseLicense" class="rvt-alert-list__item" th:if="${courseLicenseError}">
+            <li id="missingCourseLicense" th:if="${courseLicenseError}">
                 <a href="javascript:document.getElementById('course_license').focus()" id="msgMissingCourseLicense" class="rvt-alert__message" th:text="${courseLicenseError}">A message text is required.</a>
             </li>
-            <li id="missingNodeLocation" class="rvt-alert-list__item" th:if="${nodeLocationError}">
+            <li id="missingNodeLocation" th:if="${nodeLocationError}">
                 <a href="javascript:document.getElementById('node_location').focus()" id="attachQuotaError" class="rvt-alert__message" th:text="${nodeLocationError}">Attachment exceeded user quota.</a>
             </li>
         </ul>
@@ -67,16 +67,16 @@
         <div class="rvt-p-top-xs">
             <span th:text="#{complete.form.info}">Complete this form to create a new Canvas course.</span>
         </div>
-        <label for="full_name" th:text="#{create.name}" class="rvt-m-top-md">Name</label>
-        <input id="full_name" type="text" class="rvt-width-lg" size="255" th:value="${displayname}" name="full_name"
+        <label for="full_name" th:text="#{create.name}" class="rvt-label rvt-m-top-md">Name</label>
+        <input id="full_name" type="text" class="rvt-text-input rvt-width-lg" size="255" th:value="${displayname}" name="full_name"
                maxlength="255" disabled aria-disabled="true" />
 
-        <label for="username" th:text="#{create.username}" class="rvt-m-top-md">Username</label>
-        <input id="username" type="text" class="rvt-width-lg" size="255" th:value="${username}" name="username"
+        <label for="username" th:text="#{create.username}" class="rvt-label rvt-m-top-md">Username</label>
+        <input id="username" type="text" class="rvt-text-input rvt-width-lg" size="255" th:value="${username}" name="username"
                maxlength="255" disabled aria-disabled="true" />
 
-        <label for="course_name" th:text="#{create.coursename}" class="rvt-m-top-md">Course Name</label>
-        <input id="course_name" type="text" class="rvt-width-lg" size="255" name="course_name"
+        <label for="course_name" th:text="#{create.coursename}" class="rvt-label rvt-m-top-md">Course Name</label>
+        <input id="course_name" type="text" class="rvt-text-input rvt-width-lg" size="255" name="course_name"
                th:value="${coursename}" maxlength="255"
                th:classappend="${courseNameError != null} ? 'rvt-validation-danger'"
                th:aria-describedby="${courseNameError != null} ? 'course_name_error_text'"
@@ -95,8 +95,8 @@
             </span>
         </div>
 
-        <label for="short_name" th:text="#{create.shortname}" class="rvt-m-top-md">Short Name</label>
-        <input id="short_name" type="text" class="rvt-width-lg" size="255" name="short_name"
+        <label for="short_name" th:text="#{create.shortname}" class="rvt-label rvt-m-top-md">Short Name</label>
+        <input id="short_name" type="text" class="rvt-text-input rvt-width-lg" size="255" name="short_name"
                th:value="${shortname}" maxlength="255"
                th:classappend="${shortNameError != null} ? 'rvt-validation-danger'"
                th:aria-describedby="${shortNameError != null} ? 'short_name_error_text'"
@@ -115,8 +115,8 @@
             </span>
         </div>
 
-        <label for="course_license" th:text="#{create.content.license}" class="rvt-m-top-md">Content License</label>
-        <select id="course_license" name="course_license" class="rvt-width-lg"
+        <label for="course_license" th:text="#{create.content.license}" class="rvt-label rvt-m-top-md">Content License</label>
+        <select id="course_license" name="course_license" class="rvt-select rvt-width-lg"
                 th:classappend="${courseLicenseError != null} ? 'rvt-validation-danger'"
                 th:aria-describedby="${courseLicenseError != null} ? 'course_license_error_text'"
                 th:aria-invalid="${courseLicenseError != null} ? 'true'" />
@@ -137,8 +137,8 @@
             </span>
         </div>
 
-        <label for="node_location" th:text="#{create.department.school.college}" class="rvt-m-top-md">Department, School, or College</label>
-        <select id="node_location" name="node_location" class="rvt-width-lg"
+        <label for="node_location" th:text="#{create.department.school.college}" class="rvt-label rvt-m-top-md">Department, School, or College</label>
+        <select id="node_location" name="node_location" class="rvt-select rvt-width-lg"
                 th:classappend="${nodeLocationError != null} ? 'rvt-validation-danger'"
                 th:aria-describedby="${nodeLocationError != null} ? 'academic_unit_error_text' : 'node-note'"
                 th:aria-invalid="${nodeLocationError != null} ? 'true'" />
