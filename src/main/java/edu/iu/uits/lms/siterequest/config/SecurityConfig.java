@@ -79,8 +79,6 @@ public class SecurityConfig {
         @Autowired
         private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
 
-        private int yearInSeconds = 31536000;
-
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http
@@ -113,8 +111,8 @@ public class SecurityConfig {
         @Override
         public void configure(WebSecurity web) throws Exception {
             // ignore everything except paths specified
-            web.ignoring().antMatchers("/app/jsrivet/**", "/app/webjars/**", "/app/css/**",
-                    "/app/js/**", "/app/font/**", "/app/images/**", "/favicon.ico");
+            web.ignoring().antMatchers("/app/webjars/**",
+                    "/app/font/**", "/app/images/**", "/favicon.ico");
         }
 
     }
