@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.siterequest.controller;
+package edu.iu.uits.lms.siterequest.controller.rest;
 
 /*-
  * #%L
