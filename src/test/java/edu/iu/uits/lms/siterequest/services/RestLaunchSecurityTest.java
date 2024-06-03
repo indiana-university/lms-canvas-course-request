@@ -37,7 +37,7 @@ import edu.iu.uits.lms.canvas.config.CanvasClientTestConfig;
 import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import edu.iu.uits.lms.lti.config.TestUtils;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
-import edu.iu.uits.lms.siterequest.controller.SiteRequestPropertiesController;
+import edu.iu.uits.lms.siterequest.controller.rest.SiteRequestPropertiesController;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.Test;
