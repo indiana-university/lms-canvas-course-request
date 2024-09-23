@@ -36,6 +36,8 @@ package edu.iu.uits.lms.siterequest.services;
 import edu.iu.uits.lms.canvas.config.CanvasClientTestConfig;
 import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import edu.iu.uits.lms.lti.config.TestUtils;
+import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
+import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
 import edu.iu.uits.lms.siterequest.controller.rest.SiteRequestPropertiesController;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
@@ -50,8 +52,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
@@ -63,7 +67,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = SiteRequestPropertiesController.class, properties = {"oauth.tokenprovider.url=http://foo"})
-@Import({ToolConfig.class, CanvasClientTestConfig.class, LtiClientTestConfig.class})
+//@Import({ToolConfig.class, CanvasClientTestConfig.class, LtiClientTestConfig.class})
+@ContextConfiguration(classes = {ToolConfig.class, SiteRequestPropertiesController.class, SecurityConfig.class})
 public class RestLaunchSecurityTest {
    @Autowired
    private MockMvc mvc;
@@ -71,9 +76,15 @@ public class RestLaunchSecurityTest {
    @MockBean
    private SiteRequestPropertyRepository siteRequestPropertyRepository = null;
 
+   @MockBean
+   private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
+
+   @MockBean
+   private ClientRegistrationRepository clientRegistrationRepository;
+
    @Test
    public void restNoAuthnLaunch() throws Exception {
-      //This is a secured endpoint and should not not allow access without authn
+      //This is a secured endpoint and should not allow access without authn
       SecurityContextHolder.getContext().setAuthentication(null);
       mvc.perform(get("/rest/props/all")
             .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
