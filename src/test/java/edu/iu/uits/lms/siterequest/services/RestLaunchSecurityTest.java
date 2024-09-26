@@ -33,8 +33,6 @@ package edu.iu.uits.lms.siterequest.services;
  * #L%
  */
 
-import edu.iu.uits.lms.canvas.config.CanvasClientTestConfig;
-import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import edu.iu.uits.lms.lti.config.TestUtils;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.siterequest.config.SecurityConfig;
@@ -46,7 +44,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
@@ -67,7 +64,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = SiteRequestPropertiesController.class, properties = {"oauth.tokenprovider.url=http://foo"})
-//@Import({ToolConfig.class, CanvasClientTestConfig.class, LtiClientTestConfig.class})
 @ContextConfiguration(classes = {ToolConfig.class, SiteRequestPropertiesController.class, SecurityConfig.class})
 public class RestLaunchSecurityTest {
    @Autowired
