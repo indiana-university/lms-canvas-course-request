@@ -33,16 +33,20 @@ package edu.iu.uits.lms.siterequest.services;
  * #L%
  */
 
-import edu.iu.uits.lms.canvas.config.CanvasClientTestConfig;
 import edu.iu.uits.lms.canvas.services.AccountService;
 import edu.iu.uits.lms.canvas.services.CanvasService;
+import edu.iu.uits.lms.canvas.services.ContentMigrationService;
 import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.canvas.services.TermService;
 import edu.iu.uits.lms.canvas.services.UserService;
+import edu.iu.uits.lms.common.server.ServerInfo;
+import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
 import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
+import edu.iu.uits.lms.iuonly.services.TemplateAuditService;
 import edu.iu.uits.lms.lti.LTIConstants;
-import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import edu.iu.uits.lms.lti.config.TestUtils;
+import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
+import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
 import edu.iu.uits.lms.siterequest.controller.SiteRequestController;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
@@ -51,11 +55,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -65,28 +70,40 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = SiteRequestController.class, properties = {"oauth.tokenprovider.url=http://foo"})
-@Import({ToolConfig.class, CanvasClientTestConfig.class, LtiClientTestConfig.class})
+@ContextConfiguration(classes = {ToolConfig.class, SiteRequestController.class, SecurityConfig.class})
 public class AppLaunchSecurityTest {
 
    @Autowired
    private MockMvc mvc;
 
    @MockBean
-   private AccountService accountService = null;
+   private AccountService accountService;
    @MockBean
-   private CourseService courseService = null;
+   private CourseService courseService;
    @MockBean
-   private ResourceBundleMessageSource messageSource = null;
+   private ResourceBundleMessageSource messageSource;
    @MockBean
-   private CanvasService canvasService = null;
+   private CanvasService canvasService;
    @MockBean
-   private TermService termService = null;
+   private TermService termService;
    @MockBean
-   private UserService userService = null;
+   private UserService userService;
    @MockBean
-   private FeatureAccessServiceImpl featureAccessService = null;
+   private FeatureAccessServiceImpl featureAccessService;
    @MockBean
-   private SiteRequestPropertyRepository siteRequestPropertyRepository = null;
+   private SiteRequestPropertyRepository siteRequestPropertyRepository;
+   @MockBean
+   private HierarchyResourceRepository hierarchyResourceRepository;
+   @MockBean
+   private TemplateAuditService templateAuditService;
+   @MockBean
+   private ContentMigrationService contentMigrationService;
+   @MockBean
+   private LmsDefaultGrantedAuthoritiesMapper defaultGrantedAuthoritiesMapper;
+   @MockBean
+   private ClientRegistrationRepository clientRegistrationRepository;
+   @MockBean(name = ServerInfo.BEAN_NAME)
+   private ServerInfo serverInfo;
 
    @Test
    public void appNoAuthnLaunch() throws Exception {
