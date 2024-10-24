@@ -58,7 +58,7 @@
             <dt id="dept_school_college" th:if="${accountName != null}" th:text="#{success.department.school.college}">Department, School, or College:</dt>
             <dd id="dept_school_college_info" th:if="${accountName != null}" th:text="${accountName}">IN-INFO</dd>
             <dt id="url" th:text="#{success.link}">Link:</dt>
-            <dd id="url_info"><a th:href="${url}" th:text="${url}" target="_blank">URL for course</a></dd>
+            <dd id="url_info"><a th:href="${url}" th:text="${url}" target="_blank" rel="noopener noreferrer">URL for course</a></dd>
             <dt id="teacher" th:text="#{success.teacher}">Teacher:</dt>
             <dd id="teacher_info" th:text="${displayName}">Jane Smith</dd>
             <dt id="end_date" th:text="#{success.end.date}">End Date:</dt>
