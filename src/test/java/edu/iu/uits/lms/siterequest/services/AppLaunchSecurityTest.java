@@ -96,7 +96,7 @@ public class AppLaunchSecurityTest {
    @MockBean
    private HierarchyResourceRepository hierarchyResourceRepository;
    @MockBean
-   private SiteRequestAccountOmitRepository siteRequestAccountOmitRepository = null;
+   private SiteRequestAccountOmitRepository siteRequestAccountOmitRepository;
    @MockBean
    private TemplateAuditService templateAuditService;
    @MockBean
