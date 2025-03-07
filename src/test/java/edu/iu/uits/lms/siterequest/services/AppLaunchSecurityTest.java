@@ -49,6 +49,7 @@ import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
 import edu.iu.uits.lms.siterequest.controller.SiteRequestController;
+import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -94,6 +95,8 @@ public class AppLaunchSecurityTest {
    private SiteRequestPropertyRepository siteRequestPropertyRepository;
    @MockBean
    private HierarchyResourceRepository hierarchyResourceRepository;
+   @MockBean
+   private SiteRequestAccountOmitRepository siteRequestAccountOmitRepository = null;
    @MockBean
    private TemplateAuditService templateAuditService;
    @MockBean

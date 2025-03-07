@@ -65,24 +65,30 @@ import edu.iu.uits.lms.iuonly.services.TemplateAuditService;
 import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
 import edu.iu.uits.lms.lti.service.OidcTokenUtils;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
+import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
 import edu.iu.uits.lms.siterequest.model.SiteRequestProperty;
+import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import uk.ac.ox.ctl.lti13.lti.Role;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import java.text.MessageFormat;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -111,6 +117,8 @@ public class SiteRequestController extends OidcTokenAwareController {
     @Autowired
     private HierarchyResourceRepository hierarchyResourceRepository = null;
     @Autowired
+    private SiteRequestAccountOmitRepository siteRequestAccountOmitRepository = null;
+    @Autowired
     private ToolConfig toolConfig = null;
     @Autowired
     private TemplateAuditService templateAuditService = null;
@@ -135,6 +143,26 @@ public class SiteRequestController extends OidcTokenAwareController {
 
         // The api call used here seems to sort by name, but not sure if that's always the case or not. - CWM
         List<Account> accounts = accountService.getAccountsForUser(username);
+
+        List<String> roles = token.getPrincipal().getAttribute("https://purl.imsglobal.org/spec/lti/claim/roles");
+
+        boolean isAdmin = roles.contains(Role.Institution.ADMINISTRATOR);
+
+        // http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator
+
+        if (! isAdmin) {
+            List<SiteRequestAccountOmit> siteRequestAccountOmits = siteRequestAccountOmitRepository.findAll();
+
+            if (! siteRequestAccountOmits.isEmpty()) {
+                List<String> siteRequestAccountOmitIds = siteRequestAccountOmits.stream()
+                        .map(siteRequestAccountOmit -> siteRequestAccountOmit.getId().toString())
+                        .toList();
+
+                accounts = accounts.stream()
+                        .filter(account -> ! siteRequestAccountOmitIds.contains(account.getId()))
+                        .toList();
+            }
+        }
 
         List<License> licenseList = userService.getLicenses(username);
 
