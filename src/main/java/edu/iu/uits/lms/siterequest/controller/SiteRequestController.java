@@ -83,8 +83,10 @@ import uk.ac.ox.ctl.lti13.lti.Role;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -144,7 +146,13 @@ public class SiteRequestController extends OidcTokenAwareController {
         // The api call used here seems to sort by name, but not sure if that's always the case or not. - CWM
         List<Account> accounts = accountService.getAccountsForUser(username);
 
-        List<String> roles = token.getPrincipal().getAttribute("https://purl.imsglobal.org/spec/lti/claim/roles");
+        List<String> roles = null;
+
+        try {
+            roles = Arrays.asList(oidcTokenUtils.getAllRoles());
+        } catch (Exception e) {
+            roles = new ArrayList<>();
+        }
 
         boolean isAdmin = roles.contains(Role.Institution.ADMINISTRATOR);
 
