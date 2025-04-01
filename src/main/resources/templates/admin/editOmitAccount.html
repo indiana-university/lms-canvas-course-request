@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <!--
   #%L
-  course-setup-wizard
+  siterequest
   %%
-  Copyright (C) 2022 Indiana University
+  Copyright (C) 2015 - 2025 Indiana University
   %%
   Redistribution and use in source and binary forms, with or without modification,
   are permitted provided that the following conditions are met:
@@ -35,45 +35,14 @@
 <html lang="en-US"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{adminLayout}">
+      layout:decorate="~{omitAccountLayout}">
   <head>
     <title>Site Request</title>
   </head>
 
   <body class="rvt-layout">
     <div layout:fragment="content">
-      <a th:href="|/app/admin/${courseId}/theme/new|" class="rvt-ts-20">
-        <rvt-icon name="plus"></rvt-icon>
-        <span>Add a new theme</span>
-      </a>
-
-      <form id="theme-list-form" th:action="@{|/app/admin/${courseId}/theme/toggle|}" method="post" enctype="multipart/form-data">
-
-        <span id="searchText" hidden>Search for themes within the table</span>
-
-        <table id="themeTable" class="rvt-m-top-lg rvt-table-stripes">
-          <caption class="rvt-sr-only">Table of themes</caption>
-          <thead>
-          <tr>
-            <th scope="col" class="colAccountId"><button type="button">Account ID</button></th>
-            <th scope="col" class="colNote"><button type="button">Note</button></th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr th:each="omitAccount : ${omitAccounts}">
-            <th scope="row" th:id="|omitAccount-${omitAccount.id}|">
-              <a th:href="|/app/admin/omitaccount/${omitAccount.id}/edit|" th:text="${omitAccount.id}" class="rvt-link" th:aria-describedby="|omitAccount-desc-${omitAccount.id}|">
-                Basic color
-              </a>
-              <span th:id="|omitAccount-desc-${omitAccount.id}|" hidden th:text="|Edit the theme|"></span>
-            </th>
-            <td th:text="${omitAccount.note}">note1!</td>
-          </tr>
-          </tbody>
-        </table>
-
-      </form>
-
+      <h1>Edit Omit Account</h1>
     </div>
   </body>
 </html>

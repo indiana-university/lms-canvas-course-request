@@ -163,7 +163,7 @@ public class SiteRequestController extends OidcTokenAwareController {
 
             if (! siteRequestAccountOmits.isEmpty()) {
                 List<String> siteRequestAccountOmitIds = siteRequestAccountOmits.stream()
-                        .map(siteRequestAccountOmit -> siteRequestAccountOmit.getId().toString())
+                        .map(siteRequestAccountOmit -> siteRequestAccountOmit.getAccountIdToOmit().toString())
                         .toList();
 
                 accounts = accounts.stream()

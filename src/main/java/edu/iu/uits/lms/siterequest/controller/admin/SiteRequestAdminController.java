@@ -43,13 +43,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import java.util.List;
 
 @Controller
-@RequestMapping("/app/admin")
+@RequestMapping("/app/admin/omitaccount")
 // @Secured(LTIConstants.ADMIN_AUTHORITY)
 @Slf4j
 public class SiteRequestAdminController extends OidcTokenAwareController {
@@ -66,6 +67,12 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
         model.addAttribute("omitAccounts", siteRequestAccountOmits);
 
 
-        return "admin/admin";
+        return "admin/omitAccount";
+    }
+
+    @RequestMapping("/{omitAccountId}/edit")
+    public String adminOmitAccountEdit(@PathVariable("omitAccountId") String omitAccountId, Model model) {
+
+        return "admin/editOmitAccount";
     }
 }

@@ -82,7 +82,7 @@ public class SiteRequestAccountOmitRestController {
       SiteRequestAccountOmit siteRequestAccountOmit = new SiteRequestAccountOmit();
 
       Long id = Long.parseLong(account.getId());
-      siteRequestAccountOmit.setId(id);
+      siteRequestAccountOmit.setAccountIdToOmit(id);
       siteRequestAccountOmit.setNote("Account Name (as of this record insertion) is " + name);
 
       return ResponseEntity.status(HttpStatus.CREATED).body(siteRequestAccountOmitRepository.save(siteRequestAccountOmit));

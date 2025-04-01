@@ -52,8 +52,8 @@ import java.util.Date;
 @NoArgsConstructor
 public class SiteRequestAccountOmit implements Serializable {
     @Id
-    @Column(name = "ID")
-    private Long id;
+    @Column(name = "ACCOUNT_ID_TO_OMIT")
+    private Long accountIdToOmit;
 
     @Column(name = "NOTE")
     private String note;
