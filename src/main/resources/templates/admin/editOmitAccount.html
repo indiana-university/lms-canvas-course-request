@@ -43,6 +43,39 @@
   <body class="rvt-layout">
     <div layout:fragment="content">
       <h1>Edit Omit Account</h1>
+
+      <div id="siterequest-edit-omit-account">
+        <h2 id="page-title" class="rvt-ts-23 rvt-text-bold rvt-m-bottom-sm" th:text="${create} ? 'Create new account to omit' : | Edit account to Omit ${omitAccountForm.accountIdToOmit}|">Edit Account to Omit</h2>
+
+        <form id="siterequest-omitaccount-form-submit" th:object="${omitAccountForm}" th:action="${create}? @{|/app/admin/omitaccount/submit|} : @{|/app/admin/omitaccount/update|}" method="post" enctype="multipart/form-data">
+          <fieldset class="rvt-fieldset rvt-m-top-md">
+            <legend class="rvt-legend [ rvt-text-bold rvt-ts-18 rvt-border-bottom rvt-p-bottom-xs ]">Theme details</legend>
+
+            <label for="siterequest-omitaccount-account" class="rvt-label rvt-m-top-sm rvt-ts-16 required-label">Account to Omit</label>
+            <input th:field="*{accountIdToOmit}" th:disabled="${create == null}"
+                   type="text" id="siterequest-omitaccount-account"
+                   class="rvt-text-input required-input" aria-required="true" data-error-id="ui-name-error">
+<!--            <div th:insert="~{fragments.html :: textInputError(errorMsg='UI name is required.', errorId='ui-name-error')}"></div>-->
+            <input type="hidden" th:field="*{accountIdToOmit}" th:if="${create == null}" />
+
+            <label for="siterequest-omitaccount-note" class="rvt-label rvt-m-top-sm rvt-ts-16 required-label">Note</label>
+            <input type="text" id="siterequest-omitaccount-note" th:field="*{note}" class="rvt-text-input required-input" aria-required="true" data-error-id="theme-name-error">
+<!--            <div th:insert="~{fragments.html :: textInputError(errorMsg='Name is required.', errorId='theme-name-error')}"></div>-->
+
+          </fieldset>
+
+          <div class="rvt-button-group rvt-m-top-xl">
+            <button id="siterequest-omitaccount-edit-save" class="rvt-button validate-not-empty" name="action" value="submit">
+              <span th:replace="~{fragments.html :: loadingButton(buttonText='Save', srText='Saving Omit Account')}"></span>
+            </button>
+            <button id="siterequest-omitaccount-edit-cancel" class="rvt-button rvt-button--secondary loading-btn" name="action" value="cancel">
+              <span th:replace="~{fragments.html :: loadingButton(buttonText='Cancel and return to list', srText='Loading list of Omit Accounts')}"></span>
+            </button>
+          </div>
+
+        </form>
+
+      </div>
     </div>
   </body>
 </html>

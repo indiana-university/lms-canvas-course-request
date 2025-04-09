@@ -1,4 +1,4 @@
-$('#themeTable').DataTable({
+$('#omitAccountTable').DataTable({
    orderCellsTop: true,
    paging: false,
    order: [[0, 'asc']],
@@ -9,5 +9,8 @@ $('#themeTable').DataTable({
           aria: {
           }
        }
-   }
+   },
+    columnDefs: [
+               { targets: ['.colDelete'], orderable: false }
+           ]
    });

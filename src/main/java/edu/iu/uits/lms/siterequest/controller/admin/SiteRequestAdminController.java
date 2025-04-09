@@ -45,6 +45,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import java.util.List;
@@ -72,7 +73,56 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
 
     @RequestMapping("/{omitAccountId}/edit")
     public String adminOmitAccountEdit(@PathVariable("omitAccountId") String omitAccountId, Model model) {
+        SiteRequestAccountOmit siteRequestAccountOmit = siteRequestAccountOmitRepository.findById(Long.parseLong(omitAccountId)).orElse(null);
+
+        if (siteRequestAccountOmit != null) {
+            model.addAttribute("omitAccountForm", siteRequestAccountOmit);
+        }
 
         return "admin/editOmitAccount";
     }
+
+    @RequestMapping("/update")
+    public String adminOmitAccountUpdate(@RequestParam("action") String action, SiteRequestAccountOmit siteRequestAccountOmit, Model model) {
+        if ("submit".equalsIgnoreCase(action)) {
+            if (siteRequestAccountOmit.getNote() != null) {
+                final int noteLength = siteRequestAccountOmit.getNote().length();
+                siteRequestAccountOmit.setNote(siteRequestAccountOmit.getNote().substring(0, Math.min(noteLength, 255)));
+            }
+
+            siteRequestAccountOmitRepository.save(siteRequestAccountOmit);
+        }
+
+        return adminMain(model);
+    }
+
+    @RequestMapping("/new")
+    public String adminOmitAccountNew(Model model) {
+        model.addAttribute("create", true);
+        model.addAttribute("omitAccountForm", new SiteRequestAccountOmit());
+
+        return "admin/editOmitAccount";
+     }
+
+    @RequestMapping("/submit")
+    public String adminOmitAccountCreate(@RequestParam("action") String action, SiteRequestAccountOmit siteRequestAccountOmit, Model model) {
+        if ("submit".equalsIgnoreCase(action)) {
+            if (siteRequestAccountOmit.getNote() != null) {
+                final int noteLength = siteRequestAccountOmit.getNote().length();
+                siteRequestAccountOmit.setNote(siteRequestAccountOmit.getNote().substring(0, Math.min(noteLength, 255)));
+            }
+
+            siteRequestAccountOmitRepository.save(siteRequestAccountOmit);
+        }
+
+        return adminMain(model);
+    }
+
+    @RequestMapping("/{omitAccountId}/delete")
+    public String adminOmitAccountDelete(@PathVariable("omitAccountId") String omitAccountId, Model model) {
+        siteRequestAccountOmitRepository.deleteById(Long.parseLong(omitAccountId));
+
+        return adminMain(model);
+    }
+
 }
