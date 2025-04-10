@@ -37,11 +37,14 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{omitAccountLayout}">
   <head>
-    <title>Site Request</title>
+    <title>Site Request Admin Tool</title>
   </head>
 
-  <body class="rvt-layout">
+  <body>
     <div layout:fragment="content">
+      <div class="rvt-p-tb-md">
+        <h1 id="tool-title" class="rvt-ts-36">Site Request Admin Tool</h1>
+      </div>
       <a th:href="|/app/admin/omitaccount/new|" class="rvt-ts-20">
         <rvt-icon name="plus"></rvt-icon>
         <span>Add a New Omit Account</span>
@@ -55,9 +58,9 @@
           <caption class="rvt-sr-only">Table of Omit Accounts</caption>
           <thead>
           <tr>
-            <th scope="col" class="colAccountId"><button type="button">Account ID</button></th>
-            <th scope="col" class="colNote"><button type="button">Note</button></th>
-            <th scope="col" class="colDelete"><button type="button">Delete</button></th>
+            <th scope="col" class="colAccountId">Account ID</th>
+            <th scope="col" class="colNote">Note</th>
+            <th scope="col" class="colDelete">Delete</th>
           </tr>
           </thead>
           <tbody>

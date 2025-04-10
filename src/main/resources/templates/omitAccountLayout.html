@@ -49,24 +49,14 @@
     <link rel="stylesheet" type="text/css" th:href="@{/app/webjars/datatables-select/css/select.dataTables.min.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/datatables-ext/datatables-ally.css}"/>
 </head>
-<body class="rvt-layout">
 
-<main id="main-content" class="rvt-flex rvt-flex-column rvt-grow-1" aria-labelledby="page-title">
-    <div class="rvt-bg-black-000 rvt-border-bottom rvt-p-top-lg">
-        <div class="rvt-container-lg rvt-prose rvt-flow rvt-p-bottom-xl">
-            <h1 id="site-request-header" class="rvt-m-top-xs" tabindex="-1">
-                Site Request Admin Tool
-            </h1>
-        </div>
-    </div>
+<body>
 
-     <div layout:fragment="content" class="rvt-container-lg">
-         Page content goes here
-     </div>
- </main>
+<div layout:fragment="content" class="rvt-container-xl rvt-p-top-sm" id="main-container" role="main" aria-labelledby="tool-title">
+    <!-- Page content goes here -->
+</div>
 
-
-<footer th:unless="${hideFooter}" class="rvt-ts-12 rvt-container rvt-m-top-lg">
+<footer th:unless="${hideFooter}" class="rvt-ts-12 rvt-container-xl rvt-m-top-lg">
     <div id="footer" th:text="${@serverInfo}"></div>
 </footer>
 

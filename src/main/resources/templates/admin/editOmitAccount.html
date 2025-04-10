@@ -40,11 +40,13 @@
     <title>Site Request</title>
   </head>
 
-  <body class="rvt-layout">
+  <body>
     <div layout:fragment="content">
-      <h1>Edit Omit Account</h1>
+      <div class="rvt-p-tb-md">
+        <h1 id="tool-title" class="rvt-ts-36">Site Request Admin Tool</h1>
+      </div>
 
-      <div id="siterequest-edit-omit-account">
+      <div id="siterequest-edit-omit-account" class="rvt-width-xl">
         <h2 id="page-title" class="rvt-ts-23 rvt-text-bold rvt-m-bottom-sm" th:text="${create} ? 'Create new account to omit' : | Edit account to Omit ${omitAccountForm.accountIdToOmit}|">Edit Account to Omit</h2>
 
         <form id="siterequest-omitaccount-form-submit" th:object="${omitAccountForm}" th:action="${create}? @{|/app/admin/omitaccount/submit|} : @{|/app/admin/omitaccount/update|}" method="post" enctype="multipart/form-data">
