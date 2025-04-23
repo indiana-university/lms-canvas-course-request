@@ -156,8 +156,6 @@ public class SiteRequestController extends OidcTokenAwareController {
 
         final boolean isAdmin = roles.contains(Role.Institution.ADMINISTRATOR);
 
-        // http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator
-
         if (! isAdmin) {
             List<SiteRequestAccountOmit> siteRequestAccountOmits = siteRequestAccountOmitRepository.findAll();
 
