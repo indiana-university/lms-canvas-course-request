@@ -58,6 +58,9 @@ public class SiteRequestAccountOmit implements Serializable {
     @Column(name = "NOTE")
     private String note;
 
+    @Column(name = "USER_ADDED_BY")
+    private String userAddedBy;
+
     @Column(name = "CREATEDON")
     private Date createdOn;
 

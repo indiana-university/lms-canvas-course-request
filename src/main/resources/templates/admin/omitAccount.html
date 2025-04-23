@@ -60,6 +60,7 @@
           <tr>
             <th scope="col" class="colAccountId">Account ID</th>
             <th scope="col" class="colNote">Note</th>
+            <th scope="col" class="colUserAddedBy">User Added By</th>
             <th scope="col" class="colDelete">Delete</th>
           </tr>
           </thead>
@@ -72,6 +73,7 @@
               <span th:id="|omitAccount-desc-${omitAccount.accountIdToOmit}|" hidden th:text="|Edit the account to omit|"></span>
             </th>
             <td th:text="${omitAccount.note}">note1</td>
+            <td th:text="${omitAccount.userAddedBy}">user1</td>
             <td>
               <a th:href="|/app/admin/omitaccount/${omitAccount.accountIdToOmit}/delete|" class="rvt-link">Delete</a>
             </td>

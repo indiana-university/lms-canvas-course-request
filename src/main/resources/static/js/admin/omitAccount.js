@@ -14,3 +14,18 @@ $('#omitAccountTable').DataTable({
                { targets: ['.colDelete'], orderable: false }
            ]
    });
+
+   jQuery(document).ready(function($) {
+       let saveButton = $("#siterequest-omitaccount-edit-save");
+
+       if (saveButton.length === 1) {
+           $("#siterequest-omitaccount-edit-save").click(function(event) {
+               let accountIdToOmitInput = $('#siterequest-omitaccount-account');
+
+               if (accountIdToOmitInput.length === 1 && accountIdToOmitInput.first().val().trim().length === 0) {
+                   $("#ui-omitaccount-id-error").removeClass("rvt-display-none");
+                   event.preventDefault();
+               }
+           });
+       }
+   });

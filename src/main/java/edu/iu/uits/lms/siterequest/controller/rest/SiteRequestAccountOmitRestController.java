@@ -34,9 +34,9 @@ package edu.iu.uits.lms.siterequest.controller.rest;
  */
 
 import edu.iu.uits.lms.canvas.model.Account;
-import edu.iu.uits.lms.canvas.services.AccountService;
 import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
+import edu.iu.uits.lms.siterequest.service.SiteRequestOmitAccountService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,7 +53,7 @@ import java.util.List;
 @Tag(name = "SiteRequestAccountOmitCustom")
 public class SiteRequestAccountOmitRestController {
    @Autowired
-   private AccountService accountService;
+   private SiteRequestOmitAccountService siteRequestOmitAccountService;
 
    @Autowired
    private SiteRequestAccountOmitRepository siteRequestAccountOmitRepository;
@@ -64,10 +64,7 @@ public class SiteRequestAccountOmitRestController {
          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No account name supplied");
       }
 
-      List<Account> accounts = accountService.getSubAccounts();
-      accounts = accounts.stream()
-              .filter(account -> name.equals(account.getName()))
-              .toList();
+      List<Account> accounts = siteRequestOmitAccountService.getAccountByName(name);
 
       if (accounts.isEmpty()) {
          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find the account for the name supplied");
@@ -83,7 +80,7 @@ public class SiteRequestAccountOmitRestController {
 
       Long id = Long.parseLong(account.getId());
       siteRequestAccountOmit.setAccountIdToOmit(id);
-      siteRequestAccountOmit.setNote("Account Name (as of this record insertion) is " + name);
+      siteRequestAccountOmit.setNote(String.format(SiteRequestOmitAccountService.DEFAULT_NOTE_FORMAT_STRING, name));
 
       return ResponseEntity.status(HttpStatus.CREATED).body(siteRequestAccountOmitRepository.save(siteRequestAccountOmit));
    }

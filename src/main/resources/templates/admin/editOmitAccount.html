@@ -56,14 +56,16 @@
             <label for="siterequest-omitaccount-account" class="rvt-label rvt-m-top-sm rvt-ts-16 required-label">Account to Omit</label>
             <input th:field="*{accountIdToOmit}" th:disabled="${create == null}"
                    type="text" id="siterequest-omitaccount-account"
-                   class="rvt-text-input required-input" aria-required="true" data-error-id="ui-name-error">
-<!--            <div th:insert="~{fragments.html :: textInputError(errorMsg='UI name is required.', errorId='ui-name-error')}"></div>-->
+                   class="rvt-text-input required-input" aria-required="true" data-error-id="ui-omitaccount-id-error">
+            <div th:insert="~{fragments.html :: textInputError(errorMsg='Account ID to omit is required.', errorId='ui-omitaccount-id-error')}"></div>
             <input type="hidden" th:field="*{accountIdToOmit}" th:if="${create == null}" />
 
             <label for="siterequest-omitaccount-note" class="rvt-label rvt-m-top-sm rvt-ts-16 required-label">Note</label>
-            <input type="text" id="siterequest-omitaccount-note" th:field="*{note}" class="rvt-text-input required-input" aria-required="true" data-error-id="theme-name-error">
-<!--            <div th:insert="~{fragments.html :: textInputError(errorMsg='Name is required.', errorId='theme-name-error')}"></div>-->
+            <input type="text" id="siterequest-omitaccount-note" th:field="*{note}" class="rvt-text-input required-input" aria-required="false">
 
+            <label for="siterequest-omitaccount-user-added-by" class="rvt-label rvt-m-top-sm rvt-ts-16 required-label">User Added By</label>
+            <input type="text" id="siterequest-omitaccount-user-added-by" th:field="*{userAddedBy}" th:disabled="true" class="rvt-text-input required-input" aria-required="false">
+            <input type="hidden" th:field="*{userAddedBy}" />
           </fieldset>
 
           <div class="rvt-button-group rvt-m-top-xl">

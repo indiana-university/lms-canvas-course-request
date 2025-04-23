@@ -33,11 +33,14 @@ package edu.iu.uits.lms.siterequest.controller.admin;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.model.Account;
+import edu.iu.uits.lms.canvas.services.AccountService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
 import edu.iu.uits.lms.lti.service.OidcTokenUtils;
 import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
+import edu.iu.uits.lms.siterequest.service.SiteRequestOmitAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -52,21 +55,20 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/app/admin/omitaccount")
-// @Secured(LTIConstants.ADMIN_AUTHORITY)
+@Secured(LTIConstants.ADMIN_AUTHORITY)
 @Slf4j
 public class SiteRequestAdminController extends OidcTokenAwareController {
+    @Autowired
+    private AccountService accountService;
+
     @Autowired
     private SiteRequestAccountOmitRepository siteRequestAccountOmitRepository;
 
     @RequestMapping("/launch")
     public String adminMain(Model model) {
-        OidcAuthenticationToken token = getTokenWithoutContext();
-        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
-
         List<SiteRequestAccountOmit> siteRequestAccountOmits = siteRequestAccountOmitRepository.findAll();
 
         model.addAttribute("omitAccounts", siteRequestAccountOmits);
-
 
         return "admin/omitAccount";
     }
@@ -87,7 +89,10 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
         if ("submit".equalsIgnoreCase(action)) {
             if (siteRequestAccountOmit.getNote() != null) {
                 final int noteLength = siteRequestAccountOmit.getNote().length();
-                siteRequestAccountOmit.setNote(siteRequestAccountOmit.getNote().substring(0, Math.min(noteLength, 255)));
+
+                // if the note is longer than the database field, truncate the note to the database field length
+                siteRequestAccountOmit.setNote(siteRequestAccountOmit.getNote().substring(0,
+                        Math.min(noteLength, SiteRequestOmitAccountService.MAXIMUM_NOTE_LENGTH)));
             }
 
             siteRequestAccountOmitRepository.save(siteRequestAccountOmit);
@@ -98,8 +103,14 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
 
     @RequestMapping("/new")
     public String adminOmitAccountNew(Model model) {
+        OidcAuthenticationToken token = getTokenWithoutContext();
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+
         model.addAttribute("create", true);
-        model.addAttribute("omitAccountForm", new SiteRequestAccountOmit());
+
+        SiteRequestAccountOmit siteRequestAccountOmit = new SiteRequestAccountOmit();
+        siteRequestAccountOmit.setUserAddedBy(oidcTokenUtils.getUserLoginId());
+        model.addAttribute("omitAccountForm", siteRequestAccountOmit);
 
         return "admin/editOmitAccount";
      }
@@ -109,7 +120,18 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
         if ("submit".equalsIgnoreCase(action)) {
             if (siteRequestAccountOmit.getNote() != null) {
                 final int noteLength = siteRequestAccountOmit.getNote().length();
-                siteRequestAccountOmit.setNote(siteRequestAccountOmit.getNote().substring(0, Math.min(noteLength, 255)));
+
+                // if the note is longer than the database field, truncate the note to the database field length
+                siteRequestAccountOmit.setNote(siteRequestAccountOmit.getNote().substring(0,
+                        Math.min(noteLength, SiteRequestOmitAccountService.MAXIMUM_NOTE_LENGTH)));
+            }
+
+            if (siteRequestAccountOmit.getNote() == null || siteRequestAccountOmit.getNote().isEmpty()) {
+                final Account account = accountService.getAccount(siteRequestAccountOmit.getAccountIdToOmit().toString());
+
+                if (account != null) {
+                    siteRequestAccountOmit.setNote(String.format(SiteRequestOmitAccountService.DEFAULT_NOTE_FORMAT_STRING, account.getName()));
+                }
             }
 
             siteRequestAccountOmitRepository.save(siteRequestAccountOmit);
