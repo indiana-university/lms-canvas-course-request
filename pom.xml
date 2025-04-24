@@ -344,6 +344,7 @@
                     <excludes>
                         <exclude>**/env.properties</exclude>
                         <exclude>**/messages.properties</exclude>
+                        <exclude>**/admin/omitAccount.js</exclude>
                     </excludes>
                 </configuration>
             </plugin>
