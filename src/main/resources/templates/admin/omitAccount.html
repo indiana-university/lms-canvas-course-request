@@ -35,9 +35,13 @@
 <html lang="en-US"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{omitAccountLayout}">
+      layout:decorate="~{layout}">
   <head>
     <title>Site Request Admin Tool</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/app/webjars/datatables/css/dataTables.dataTables.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/app/webjars/datatables-select/css/select.dataTables.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/datatables-ext/datatables-ally.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/datatables-ext/datatables-ally.css}"/>
   </head>
 
   <body>
@@ -84,5 +88,16 @@
       </form>
 
     </div>
+
+    <th:block layout:fragment="script">
+      <script type="text/javascript" th:src="@{/app/webjars/datatables/js/dataTables.min.js}"></script>
+      <script type="text/javascript" th:src="@{/app/webjars/datatables-buttons/js/dataTables.buttons.min.js}"></script>
+      <script type="text/javascript" th:src="@{/app/webjars/datatables-buttons/js/buttons.html5.min.js}"></script>
+      <script type="text/javascript" th:src="@{/app/webjars/datatables-select/js/dataTables.select.min.js}"></script>
+      <script type="text/javascript" th:src="@{/app/jsrivet/datatables-ext/datatables-filters.js}"></script>
+      <script type="text/javascript" th:src="@{/app/jsrivet/datatables-ext/datatables-ally.js}"></script>
+      <script type="text/javascript" th:src="@{/app/js/admin/omitAccount.js}"></script>
+    </th:block>
   </body>
+
 </html>

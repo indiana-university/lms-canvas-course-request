@@ -35,9 +35,10 @@
 <html lang="en-US"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{omitAccountLayout}">
+      layout:decorate="~{layout}">
   <head>
     <title>Site Request</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/app/css/admin/siterequest-omitaccount.css}"/>
   </head>
 
   <body>
@@ -60,10 +61,10 @@
             <div th:insert="~{fragments.html :: textInputError(errorMsg='Account ID to omit is required.', errorId='ui-omitaccount-id-error')}"></div>
             <input type="hidden" th:field="*{accountIdToOmit}" th:if="${create == null}" />
 
-            <label for="siterequest-omitaccount-note" class="rvt-label rvt-m-top-sm rvt-ts-16 required-label">Note</label>
+            <label for="siterequest-omitaccount-note" class="rvt-label rvt-m-top-sm rvt-ts-16">Note</label>
             <input type="text" id="siterequest-omitaccount-note" th:field="*{note}" class="rvt-text-input required-input" aria-required="false">
 
-            <label for="siterequest-omitaccount-user-added-by" class="rvt-label rvt-m-top-sm rvt-ts-16 required-label">User Added By</label>
+            <label for="siterequest-omitaccount-user-added-by" class="rvt-label rvt-m-top-sm rvt-ts-16">User Added By</label>
             <input type="text" id="siterequest-omitaccount-user-added-by" th:field="*{userAddedBy}" th:disabled="true" class="rvt-text-input required-input" aria-required="false">
             <input type="hidden" th:field="*{userAddedBy}" />
           </fieldset>
@@ -81,5 +82,10 @@
 
       </div>
     </div>
+
+    <th:block layout:fragment="script">
+      <script type="text/javascript" th:src="@{/app/js/admin/editOmitAccount.js}"></script>
+    </th:block>
   </body>
 </html>
+
