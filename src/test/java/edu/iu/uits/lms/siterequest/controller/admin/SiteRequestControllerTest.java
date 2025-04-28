@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.siterequest.services;
+package edu.iu.uits.lms.siterequest.controller.admin;
 
 /*-
  * #%L
  * siterequest
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2015 - 2025 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,6 +33,9 @@ package edu.iu.uits.lms.siterequest.services;
  * #L%
  */
 
+import edu.iu.uits.lms.canvas.model.Account;
+import edu.iu.uits.lms.canvas.model.Course;
+import edu.iu.uits.lms.canvas.model.User;
 import edu.iu.uits.lms.canvas.services.AccountService;
 import edu.iu.uits.lms.canvas.services.CanvasService;
 import edu.iu.uits.lms.canvas.services.ContentMigrationService;
@@ -49,10 +52,13 @@ import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
 import edu.iu.uits.lms.siterequest.controller.SiteRequestController;
+import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -64,15 +70,19 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = SiteRequestController.class, properties = {"oauth.tokenprovider.url=http://foo"})
 @ContextConfiguration(classes = {ToolConfig.class, SiteRequestController.class, SecurityConfig.class})
-public class AppLaunchSecurityTest {
+public class SiteRequestControllerTest {
 
    @Autowired
    private MockMvc mvc;
@@ -108,63 +118,93 @@ public class AppLaunchSecurityTest {
    @MockBean(name = ServerInfo.BEAN_NAME)
    private ServerInfo serverInfo;
 
-   @Test
-   public void appNoAuthnLaunch() throws Exception {
-      //This is a secured endpoint and should not allow access without authn
-      mvc.perform(get("/app/createsite")
-            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isForbidden());
+   private static String userLoginId = "userLoginId1";
+
+   @BeforeEach
+   public void mockCommonStuff() {
+      Mockito.when(courseService.getCoursesTaughtBy(any(), anyBoolean(), anyBoolean(), anyBoolean()))
+              .thenReturn(List.of(new Course()));
+
+      Account account1 = new Account();
+      account1.setId("1");
+
+      Account account2 = new Account();
+      account2.setId("2");
+
+      Account account3 = new Account();
+      account3.setId("3");
+
+      Mockito.when(accountService.getAccountsForUser(userLoginId))
+              .thenReturn(List.of(account1, account2, account3));
+
+      SiteRequestAccountOmit siteRequestAccountOmit1 = new SiteRequestAccountOmit();
+      siteRequestAccountOmit1.setAccountIdToOmit(1L);
+
+      SiteRequestAccountOmit siteRequestAccountOmit2 = new SiteRequestAccountOmit();
+      siteRequestAccountOmit2.setAccountIdToOmit(2L);
+
+      Mockito.when(siteRequestAccountOmitRepository.findAll()).thenReturn(List.of(siteRequestAccountOmit1, siteRequestAccountOmit2));
+
+      User user1 = new User();
+      user1.setName("name1");
+
+      Mockito.when(userService.getUserBySisLoginId(userLoginId)).thenReturn(user1);
+
    }
 
    @Test
-   @Disabled("Ignoring since this tool doesn't need a context to run")
-   public void appAuthnWrongContextLaunch() throws Exception {
-      OidcAuthenticationToken token = TestUtils.buildToken("userId", "asdf", LTIConstants.BASE_USER_AUTHORITY);
+   public void omitAccount_UserIsNotAdminSomeAccountsRemoved() throws Exception {
+      final String userLoginId = "userLoginId1";
+
+      Map<String, Object> extraAttributesMap = new HashMap<>();
+      extraAttributesMap.put(LTIConstants.CLAIMS_KEY_ROLES, List.of(LTIConstants.CANVAS_INSTRUCTOR_ROLE));
+
+      Map<String, Object> customAttributesMap = new HashMap<>();
+      customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
+      customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
+
+      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_ROLE, extraAttributesMap, customAttributesMap);
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
-      //This is a secured endpoint and should not allow access without authn
-      ResultActions mockMvcAction = mvc.perform(get("/app/createsite")
+      ResultActions resultActions = mvc.perform(get("/app/createsite")
+            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+            .contentType(MediaType.APPLICATION_JSON));
+
+      Assertions.assertEquals(200, resultActions.andReturn().getResponse().getStatus());
+
+      List<Account> accounts = (List<Account>) resultActions.andReturn().getModelAndView().getModel().get("accounts");
+
+      Assertions.assertNotNull(accounts);
+      Assertions.assertEquals(1, accounts.size());
+      Assertions.assertEquals("3", accounts.getFirst().getId());
+   }
+
+   @Test
+   public void omitAccount_UserIsAdminAccountsNotRemoved() throws Exception {
+      final String userLoginId = "userLoginId1";
+
+      Map<String, Object> extraAttributesMap = new HashMap<>();
+      extraAttributesMap.put(LTIConstants.CLAIMS_KEY_ROLES, List.of(LTIConstants.CANVAS_ADMIN_ROLE));
+
+      Map<String, Object> customAttributesMap = new HashMap<>();
+      customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
+      customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
+
+      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.ADMIN_ROLE, extraAttributesMap, customAttributesMap);
+
+      SecurityContextHolder.getContext().setAuthentication(token);
+
+      ResultActions resultActions = mvc.perform(get("/app/createsite")
               .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
               .contentType(MediaType.APPLICATION_JSON));
 
-      mockMvcAction.andExpect(status().isInternalServerError());
-      mockMvcAction.andExpect(MockMvcResultMatchers.view().name ("error"));
-      mockMvcAction.andExpect(MockMvcResultMatchers.model().attributeExists("error"));
+      Assertions.assertEquals(200, resultActions.andReturn().getResponse().getStatus());
+
+      List<Account> accounts = (List<Account>) resultActions.andReturn().getModelAndView().getModel().get("accounts");
+
+      Assertions.assertNotNull(accounts);
+      Assertions.assertEquals(3, accounts.size());
    }
 
-   @Test
-   public void appAuthnLaunch() throws Exception {
-      OidcAuthenticationToken token = TestUtils.buildToken("userId", "1234", LTIConstants.BASE_USER_AUTHORITY);
-
-      SecurityContextHolder.getContext().setAuthentication(token);
-
-      //This is a secured endpoint and should not allow access without authn
-      mvc.perform(get("/app/createsite")
-            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-   }
-
-   @Test
-   public void randomUrlNoAuth() throws Exception {
-      //This is a secured endpoint and should not allow access without authn
-      mvc.perform(get("/asdf/foobar")
-            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isForbidden());
-   }
-
-   @Test
-   public void randomUrlWithAuth() throws Exception {
-      OidcAuthenticationToken token = TestUtils.buildToken("userId", "1234", LTIConstants.BASE_USER_AUTHORITY);
-      SecurityContextHolder.getContext().setAuthentication(token);
-
-      //This is a secured endpoint and should not allow access without authn
-      mvc.perform(get("/asdf/foobar")
-            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
-   }
 }
