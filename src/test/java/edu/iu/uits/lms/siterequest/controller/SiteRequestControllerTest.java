@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.siterequest.controller.admin;
+package edu.iu.uits.lms.siterequest.controller;
 
 /*-
  * #%L
@@ -44,20 +44,22 @@ import edu.iu.uits.lms.canvas.services.TermService;
 import edu.iu.uits.lms.canvas.services.UserService;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
+import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
 import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
 import edu.iu.uits.lms.iuonly.services.TemplateAuditService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.TestUtils;
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
-import edu.iu.uits.lms.siterequest.controller.SiteRequestController;
 import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -82,6 +84,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @WebMvcTest(value = SiteRequestController.class, properties = {"oauth.tokenprovider.url=http://foo"})
 @ContextConfiguration(classes = {ToolConfig.class, SiteRequestController.class, SecurityConfig.class})
+
 public class SiteRequestControllerTest {
 
    @Autowired
@@ -112,6 +115,10 @@ public class SiteRequestControllerTest {
    @MockBean
    private ContentMigrationService contentMigrationService;
    @MockBean
+   private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
+   @MockBean
+   private AuthorizedUserService authorizedUserService;
+   @MockBean
    private LmsDefaultGrantedAuthoritiesMapper defaultGrantedAuthoritiesMapper;
    @MockBean
    private ClientRegistrationRepository clientRegistrationRepository;
@@ -121,9 +128,11 @@ public class SiteRequestControllerTest {
    private static String userLoginId = "userLoginId1";
 
    @BeforeEach
-   public void mockCommonStuff() {
-      Mockito.when(courseService.getCoursesTaughtBy(any(), anyBoolean(), anyBoolean(), anyBoolean()))
-              .thenReturn(List.of(new Course()));
+   public void mockCommonStuff(TestInfo testInfo) {
+      if (! testInfo.getTestMethod().get().getName().equals("userDoesNotTeachAnyCourses")) {
+         Mockito.when(courseService.getCoursesTaughtBy(any(), anyBoolean(), anyBoolean(), anyBoolean()))
+                 .thenReturn(List.of(new Course()));
+      }
 
       Account account1 = new Account();
       account1.setId("1");
@@ -153,9 +162,32 @@ public class SiteRequestControllerTest {
    }
 
    @Test
-   public void omitAccount_UserIsNotAdminSomeAccountsRemoved() throws Exception {
-      final String userLoginId = "userLoginId1";
+   public void userDoesNotTeachAnyCourses() throws Exception {
+      Map<String, Object> extraAttributesMap = new HashMap<>();
+      extraAttributesMap.put(LTIConstants.CLAIMS_KEY_ROLES, List.of(LTIConstants.CANVAS_INSTRUCTOR_ROLE));
 
+      Map<String, Object> customAttributesMap = new HashMap<>();
+      customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
+      customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
+
+      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_ROLE, extraAttributesMap, customAttributesMap);
+
+      SecurityContextHolder.getContext().setAuthentication(token);
+
+      ResultActions resultActions = mvc.perform(get("/app/createsite")
+              .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+              .contentType(MediaType.APPLICATION_JSON));
+
+      Assertions.assertEquals(200, resultActions.andReturn().getResponse().getStatus());
+      Assertions.assertEquals("siterequest_error", resultActions.andReturn().getModelAndView().getViewName());
+
+      Boolean notTeacher = (Boolean) resultActions.andReturn().getModelAndView().getModel().get("notTeacher");
+      Assertions.assertNotNull(notTeacher);
+      Assertions.assertTrue(notTeacher);
+   }
+
+   @Test
+   public void omitAccount_UserIsNotAdminSomeAccountsRemoved() throws Exception {
       Map<String, Object> extraAttributesMap = new HashMap<>();
       extraAttributesMap.put(LTIConstants.CLAIMS_KEY_ROLES, List.of(LTIConstants.CANVAS_INSTRUCTOR_ROLE));
 
@@ -182,8 +214,6 @@ public class SiteRequestControllerTest {
 
    @Test
    public void omitAccount_UserIsAdminAccountsNotRemoved() throws Exception {
-      final String userLoginId = "userLoginId1";
-
       Map<String, Object> extraAttributesMap = new HashMap<>();
       extraAttributesMap.put(LTIConstants.CLAIMS_KEY_ROLES, List.of(LTIConstants.CANVAS_ADMIN_ROLE));
 

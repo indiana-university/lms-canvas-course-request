@@ -41,10 +41,12 @@ import edu.iu.uits.lms.canvas.services.TermService;
 import edu.iu.uits.lms.canvas.services.UserService;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
+import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
 import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
 import edu.iu.uits.lms.iuonly.services.TemplateAuditService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.TestUtils;
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
@@ -101,6 +103,10 @@ public class AppLaunchSecurityTest {
    private TemplateAuditService templateAuditService;
    @MockBean
    private ContentMigrationService contentMigrationService;
+   @MockBean
+   private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
+   @MockBean
+   private AuthorizedUserService authorizedUserService;
    @MockBean
    private LmsDefaultGrantedAuthoritiesMapper defaultGrantedAuthoritiesMapper;
    @MockBean

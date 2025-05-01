@@ -34,6 +34,8 @@ package edu.iu.uits.lms.siterequest.config;
  */
 
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
+import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -56,6 +58,11 @@ import static edu.iu.uits.lms.lti.LTIConstants.WELL_KNOWN_ALL;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    @Autowired
+    private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
+
+    @Autowired
+    private AuthorizedUserService authorizedUserService;
 
     @Autowired
     private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
@@ -106,7 +113,7 @@ public class SecurityConfig {
         //Setup the LTI handshake
         http.with(new Lti13Configurer(), lti ->
                 lti.setSecurityContextRepository(new HttpSessionSecurityContextRepository())
-                        .grantedAuthoritiesMapper(lmsDefaultGrantedAuthoritiesMapper));
+                        .grantedAuthoritiesMapper(new CustomRoleMapper(defaultInstructorRoleRepository, authorizedUserService)));
 
         http.securityMatcher("/**")
                 .authorizeHttpRequests((authz) -> authz.anyRequest().authenticated())

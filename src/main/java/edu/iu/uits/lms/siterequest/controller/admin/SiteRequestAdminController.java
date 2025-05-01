@@ -55,7 +55,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/app/admin/omitaccount")
-@Secured(LTIConstants.ADMIN_AUTHORITY)
+@Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
 @Slf4j
 public class SiteRequestAdminController extends OidcTokenAwareController {
     @Autowired
