@@ -69,48 +69,23 @@ public class CustomRoleMapper extends LmsDefaultGrantedAuthoritiesMapper {
            OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(userAuth.getAttributes());
            log.debug("LTI Claims: {}", userAuth.getAttributes());
 
-           if (Boolean.parseBoolean(oidcTokenUtils.getCustomValue("is_admin_mode"))) {
+           if (Boolean.parseBoolean(oidcTokenUtils.getCustomValue("is_frontend_mode"))) {
+               log.debug("User mode");
+               // Use the legit roles
+               return super.mapAuthorities(authorities);
+           } else {
                log.debug("Admin mode");
                String userId = oidcTokenUtils.getUserLoginId();
-
-               String rolesString = "NotAuthorized";
 
                AuthorizedUser user = authorizedUserService.findByActiveUsernameAndToolPermission(userId, AUTH_ADMIN_TOOL_PERMISSION);
 
                if (user != null) {
-                   rolesString = LTIConstants.CANVAS_INSTRUCTOR_ROLE;
+                   OidcUserAuthority newUserAuth = new OidcUserAuthority(LTIConstants.INSTRUCTOR_AUTHORITY, userAuth.getIdToken(), userAuth.getUserInfo());
+                   remappedAuthorities.add(newUserAuth);
                }
-
-               String[] userRoles = rolesString.split(",");
-
-               String newAuthString = returnEquivalentAuthority(userRoles, getDefaultInstructorRoles());
-               OidcUserAuthority newUserAuth = new OidcUserAuthority(newAuthString, userAuth.getIdToken(), userAuth.getUserInfo());
-
-               remappedAuthorities.add(newUserAuth);
-           } else {
-               log.debug("User mode");
-               // Use the legit roles
-               return super.mapAuthorities(authorities);
            }
        }
 
        return remappedAuthorities;
    }
-
-    @Override
-    protected String returnEquivalentAuthority(String[] userRoles, List<String> instructorRoles) {
-        List<String> userRoleList = Arrays.asList(userRoles);
-
-        for (String instructorRole : instructorRoles) {
-            if (userRoleList.contains(instructorRole)) {
-                return LTIConstants.INSTRUCTOR_AUTHORITY;
-            }
-        }
-
-        if (userRoleList.contains(LTIConstants.CANVAS_DESIGNER_ROLE)) {
-            return LTIConstants.INSTRUCTOR_AUTHORITY;
-        }
-
-        return LTIConstants.STUDENT_AUTHORITY;
-    }
 }

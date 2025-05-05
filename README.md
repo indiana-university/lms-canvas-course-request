@@ -28,11 +28,11 @@ In the `Message` section, set the following:
 <tr><th>Property</th><th>Value</th></tr>
 <tr><td>Custom parameters</td><td>
 
-If launching in administration mode, add "is_admin_mode=true".  If not launching in the
+If launching in frontend mode, add "is_frontend_mode=true".  If launching in the
 administrator mode, do not use that parameter.
 
 ```
-is_admin_mode=true
+is_frontend_mode=true
 canvas_user_login_id=johnsmith
 ```
 

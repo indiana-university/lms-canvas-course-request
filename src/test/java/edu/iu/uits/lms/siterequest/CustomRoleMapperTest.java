@@ -65,6 +65,7 @@ public class CustomRoleMapperTest {
 
         Map<String, Object> claims = new HashMap<>();
         Map<String, Object> customClaims = new HashMap<>();
+        customClaims.put("is_frontend_mode", "true");
         customClaims.put("canvas_user_login_id", userLoginId);
         customClaims.put("instructure_membership_roles", LTIConstants.CANVAS_INSTRUCTOR_ROLE);
 
@@ -97,7 +98,6 @@ public class CustomRoleMapperTest {
 
         Map<String, Object> claims = new HashMap<>();
         Map<String, Object> customClaims = new HashMap<>();
-        customClaims.put("is_admin_mode", "true");
         customClaims.put("canvas_user_login_id", userLoginId);
         customClaims.put("instructure_membership_roles", LTIConstants.CANVAS_INSTRUCTOR_ROLE);
 
@@ -114,14 +114,9 @@ public class CustomRoleMapperTest {
                 .filter(grantedAuthority ->  "OIDC_USER".equals(grantedAuthority.getAuthority()))
                 .count();
 
-        long numberOfStudentAuthorites = mappedAuthorities.stream()
-                .filter(grantedAuthority -> LTIConstants.STUDENT_AUTHORITY.equals(grantedAuthority.getAuthority()))
-                .count();
-
         Assertions.assertNotNull(mappedAuthorities);
-        Assertions.assertEquals(2, mappedAuthorities.size());
+        Assertions.assertEquals(1, mappedAuthorities.size());
         Assertions.assertEquals(1, numberOfOidcUsers);
-        Assertions.assertEquals(1, numberOfStudentAuthorites);
     }
 
     @Test
@@ -130,7 +125,6 @@ public class CustomRoleMapperTest {
 
         Map<String, Object> claims = new HashMap<>();
         Map<String, Object> customClaims = new HashMap<>();
-        customClaims.put("is_admin_mode", "true");
         customClaims.put("canvas_user_login_id", userLoginId);
         customClaims.put("instructure_membership_roles", LTIConstants.CANVAS_INSTRUCTOR_ROLE);
 
@@ -163,5 +157,4 @@ public class CustomRoleMapperTest {
         Assertions.assertEquals(1, numberOfOidcUsers);
         Assertions.assertEquals(1, numberOfInstructorAuthorites);
     }
-
 }
