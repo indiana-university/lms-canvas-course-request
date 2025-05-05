@@ -22,7 +22,7 @@
   ],
   "public_jwk_url": "http://localhost:8080/.well-known/jwks.json",
   "custom_fields": {
-    "is_admin_mode":true,
+    "is_admin_mode": true,
     "canvas_user_login_id": "$Canvas.user.loginId"
   }
 }
