@@ -40,6 +40,7 @@ import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.TestUtils;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
+import edu.iu.uits.lms.siterequest.config.ApplicationConfig;
 import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
 import edu.iu.uits.lms.siterequest.controller.SiteRequestController;
@@ -65,7 +66,7 @@ import java.util.Map;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcTest(value = SiteRequestAdminController.class, properties = {"oauth.tokenprovider.url=http://foo"})
-@ContextConfiguration(classes = {ToolConfig.class, SiteRequestAdminController.class, SecurityConfig.class})
+@ContextConfiguration(classes = {ApplicationConfig.class, ToolConfig.class, SiteRequestAdminController.class, SecurityConfig.class})
 
 public class SiteRequestAdminControllerTest {
 
@@ -99,7 +100,7 @@ public class SiteRequestAdminControllerTest {
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
       customAttributesMap.put(SiteRequestController.IS_FRONTEND_MODE, "true");
 
-      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_ROLE, extraAttributesMap, customAttributesMap);
+      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_AUTHORITY, extraAttributesMap, customAttributesMap);
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
@@ -120,7 +121,7 @@ public class SiteRequestAdminControllerTest {
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
 
-      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_ROLE, extraAttributesMap, customAttributesMap);
+      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_AUTHORITY, extraAttributesMap, customAttributesMap);
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
@@ -149,8 +150,6 @@ public class SiteRequestAdminControllerTest {
               .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
               .contentType(MediaType.APPLICATION_JSON));
 
-      Assertions.assertEquals(200, resultActions.andReturn().getResponse().getStatus());
-      Assertions.assertEquals("admin/omitAccount", resultActions.andReturn().getModelAndView().getViewName());
+      Assertions.assertEquals(403, resultActions.andReturn().getResponse().getStatus());
    }
-
 }
