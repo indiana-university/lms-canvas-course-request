@@ -130,10 +130,17 @@ public class SiteRequestController extends OidcTokenAwareController {
     private static final String FEATURE_APPLY_TEMPLATE_FOR_MANUAL_COURSES = "coursetemplating.manualCourses";
     private static final String FEATURE_ENABLE_FEATURES_FOR_MANUAL_COURSES = "manualCourses.enableFeatureSetting";
 
+    public static final String IS_FRONTEND_MODE = "is_frontend_mode";
+
     @RequestMapping({"/createsite", "/launch"})
     public String createSite(Model model) {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+
+        if (oidcTokenUtils.getCustomValue(IS_FRONTEND_MODE) == null) {
+            return "siterequest_error";
+        }
+        
         String username = oidcTokenUtils.getUserLoginId();
 
         List<Course> instructorCourseList = courseService.getCoursesTaughtBy(username, false, false, false);

@@ -169,6 +169,7 @@ public class SiteRequestControllerTest {
       Map<String, Object> customAttributesMap = new HashMap<>();
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
+      customAttributesMap.put(SiteRequestController.IS_FRONTEND_MODE, "true");
 
       OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_ROLE, extraAttributesMap, customAttributesMap);
 
@@ -194,6 +195,7 @@ public class SiteRequestControllerTest {
       Map<String, Object> customAttributesMap = new HashMap<>();
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
+      customAttributesMap.put(SiteRequestController.IS_FRONTEND_MODE, "true");
 
       OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_ROLE, extraAttributesMap, customAttributesMap);
 
@@ -220,6 +222,7 @@ public class SiteRequestControllerTest {
       Map<String, Object> customAttributesMap = new HashMap<>();
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
+      customAttributesMap.put(SiteRequestController.IS_FRONTEND_MODE, "true");
 
       OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.ADMIN_ROLE, extraAttributesMap, customAttributesMap);
 
