@@ -162,6 +162,49 @@ public class SiteRequestControllerTest {
    }
 
    @Test
+   public void frontendModeNotSuppliedForCreateSite() throws Exception {
+      Map<String, Object> extraAttributesMap = new HashMap<>();
+      extraAttributesMap.put(LTIConstants.CLAIMS_KEY_ROLES, List.of(LTIConstants.CANVAS_INSTRUCTOR_ROLE));
+
+      Map<String, Object> customAttributesMap = new HashMap<>();
+      customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
+      customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
+
+      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_ROLE, extraAttributesMap, customAttributesMap);
+
+      SecurityContextHolder.getContext().setAuthentication(token);
+
+      ResultActions resultActions = mvc.perform(get("/app/createsite")
+              .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+              .contentType(MediaType.APPLICATION_JSON));
+
+      Assertions.assertEquals(200, resultActions.andReturn().getResponse().getStatus());
+      Assertions.assertEquals("siterequest_error", resultActions.andReturn().getModelAndView().getViewName());
+   }
+
+   @Test
+   public void frontendModeIsSuppliedForCreateSite() throws Exception {
+      Map<String, Object> extraAttributesMap = new HashMap<>();
+      extraAttributesMap.put(LTIConstants.CLAIMS_KEY_ROLES, List.of(LTIConstants.CANVAS_INSTRUCTOR_ROLE));
+
+      Map<String, Object> customAttributesMap = new HashMap<>();
+      customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
+      customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
+      customAttributesMap.put(SiteRequestController.IS_FRONTEND_MODE, "true");
+
+      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_ROLE, extraAttributesMap, customAttributesMap);
+
+      SecurityContextHolder.getContext().setAuthentication(token);
+
+      ResultActions resultActions = mvc.perform(get("/app/createsite")
+              .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+              .contentType(MediaType.APPLICATION_JSON));
+
+      Assertions.assertEquals(200, resultActions.andReturn().getResponse().getStatus());
+      Assertions.assertEquals("create_site", resultActions.andReturn().getModelAndView().getViewName());
+   }
+
+   @Test
    public void userDoesNotTeachAnyCourses() throws Exception {
       Map<String, Object> extraAttributesMap = new HashMap<>();
       extraAttributesMap.put(LTIConstants.CLAIMS_KEY_ROLES, List.of(LTIConstants.CANVAS_INSTRUCTOR_ROLE));
