@@ -136,7 +136,7 @@ public class SiteRequestController extends OidcTokenAwareController {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
-        if (oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE) == null) {
+        if (! Boolean.parseBoolean(oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE))) {
             return "siterequest_error";
         }
         

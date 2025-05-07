@@ -39,6 +39,7 @@ import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.lti.service.OidcTokenUtils;
+import edu.iu.uits.lms.siterequest.service.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
@@ -69,7 +70,7 @@ public class CustomRoleMapper extends LmsDefaultGrantedAuthoritiesMapper {
            OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(userAuth.getAttributes());
            log.debug("LTI Claims: {}", userAuth.getAttributes());
 
-           if (Boolean.parseBoolean(oidcTokenUtils.getCustomValue("is_frontend_mode"))) {
+           if (Boolean.parseBoolean(oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE))) {
                log.debug("User mode");
                // Use the legit roles
                return super.mapAuthorities(authorities);
