@@ -69,6 +69,7 @@ import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
 import edu.iu.uits.lms.siterequest.model.SiteRequestProperty;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
+import edu.iu.uits.lms.siterequest.service.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -130,14 +131,12 @@ public class SiteRequestController extends OidcTokenAwareController {
     private static final String FEATURE_APPLY_TEMPLATE_FOR_MANUAL_COURSES = "coursetemplating.manualCourses";
     private static final String FEATURE_ENABLE_FEATURES_FOR_MANUAL_COURSES = "manualCourses.enableFeatureSetting";
 
-    public static final String IS_FRONTEND_MODE = "is_frontend_mode";
-
     @RequestMapping({"/createsite", "/launch"})
     public String createSite(Model model) {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
-        if (oidcTokenUtils.getCustomValue(IS_FRONTEND_MODE) == null) {
+        if (oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE) == null) {
             return "siterequest_error";
         }
         

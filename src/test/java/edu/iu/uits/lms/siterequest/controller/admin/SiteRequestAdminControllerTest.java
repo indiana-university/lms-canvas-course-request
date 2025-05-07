@@ -45,6 +45,7 @@ import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
 import edu.iu.uits.lms.siterequest.controller.SiteRequestController;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
+import edu.iu.uits.lms.siterequest.service.Constants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +99,7 @@ public class SiteRequestAdminControllerTest {
       Map<String, Object> customAttributesMap = new HashMap<>();
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
-      customAttributesMap.put(SiteRequestController.IS_FRONTEND_MODE, "true");
+      customAttributesMap.put(Constants.IS_FRONTEND_MODE, "true");
 
       OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_AUTHORITY, extraAttributesMap, customAttributesMap);
 

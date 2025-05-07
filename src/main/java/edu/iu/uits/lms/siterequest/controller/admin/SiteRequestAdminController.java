@@ -38,9 +38,9 @@ import edu.iu.uits.lms.canvas.services.AccountService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
 import edu.iu.uits.lms.lti.service.OidcTokenUtils;
-import edu.iu.uits.lms.siterequest.controller.SiteRequestController;
 import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
+import edu.iu.uits.lms.siterequest.service.Constants;
 import edu.iu.uits.lms.siterequest.service.SiteRequestOmitAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +70,7 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
-        if (oidcTokenUtils.getCustomValue(SiteRequestController.IS_FRONTEND_MODE) != null) {
+        if (oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE) != null) {
             return "siterequest_error";
         }
 
@@ -86,7 +86,7 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
-        if (oidcTokenUtils.getCustomValue(SiteRequestController.IS_FRONTEND_MODE) != null) {
+        if (oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE) != null) {
             return "siterequest_error";
         }
 
@@ -104,7 +104,7 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
-        if (oidcTokenUtils.getCustomValue(SiteRequestController.IS_FRONTEND_MODE) != null) {
+        if (oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE) != null) {
             return "siterequest_error";
         }
 
@@ -128,7 +128,7 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
-        if (oidcTokenUtils.getCustomValue(SiteRequestController.IS_FRONTEND_MODE) != null) {
+        if (oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE) != null) {
             return "siterequest_error";
         }
 
@@ -146,7 +146,7 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
-        if (oidcTokenUtils.getCustomValue(SiteRequestController.IS_FRONTEND_MODE) != null) {
+        if (oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE) != null) {
             return "siterequest_error";
         }
 
@@ -178,7 +178,7 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
-        if (oidcTokenUtils.getCustomValue(SiteRequestController.IS_FRONTEND_MODE) != null) {
+        if (oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE) != null) {
             return "siterequest_error";
         }
 
@@ -186,5 +186,4 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
 
         return adminMain(model);
     }
-
 }
