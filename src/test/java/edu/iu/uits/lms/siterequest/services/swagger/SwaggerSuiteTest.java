@@ -33,12 +33,15 @@ package edu.iu.uits.lms.siterequest.services.swagger;
  * #L%
  */
 
+import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerCustomTest;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerDisabledTest;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerEmbeddedToolTest;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerUiCustomTest;
 import org.junit.jupiter.api.Nested;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.NestedTestConfiguration;
 
@@ -48,6 +51,10 @@ import static org.springframework.test.context.NestedTestConfiguration.Enclosing
 
 @NestedTestConfiguration(INHERIT)
 public class SwaggerSuiteTest {
+    @MockBean
+    private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
+    @MockBean
+    private AuthorizedUserService authorizedUserService;
 
 
     @Nested

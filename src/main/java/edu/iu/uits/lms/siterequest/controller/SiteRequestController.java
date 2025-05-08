@@ -69,6 +69,7 @@ import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
 import edu.iu.uits.lms.siterequest.model.SiteRequestProperty;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
+import edu.iu.uits.lms.siterequest.service.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -134,6 +135,11 @@ public class SiteRequestController extends OidcTokenAwareController {
     public String createSite(Model model) {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+
+        if (! Boolean.parseBoolean(oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE))) {
+            return "siterequest_error";
+        }
+        
         String username = oidcTokenUtils.getUserLoginId();
 
         List<Course> instructorCourseList = courseService.getCoursesTaughtBy(username, false, false, false);

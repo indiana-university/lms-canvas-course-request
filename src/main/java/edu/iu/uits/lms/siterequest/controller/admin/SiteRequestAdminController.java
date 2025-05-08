@@ -40,6 +40,7 @@ import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
 import edu.iu.uits.lms.lti.service.OidcTokenUtils;
 import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
+import edu.iu.uits.lms.siterequest.service.Constants;
 import edu.iu.uits.lms.siterequest.service.SiteRequestOmitAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/app/admin/omitaccount")
-@Secured(LTIConstants.ADMIN_AUTHORITY)
+@Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
 @Slf4j
 public class SiteRequestAdminController extends OidcTokenAwareController {
     @Autowired
@@ -66,6 +67,13 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
 
     @RequestMapping("/launch")
     public String adminMain(Model model) {
+        OidcAuthenticationToken token = getTokenWithoutContext();
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+
+        if (Boolean.parseBoolean(oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE))) {
+            return "siterequest_error";
+        }
+
         List<SiteRequestAccountOmit> siteRequestAccountOmits = siteRequestAccountOmitRepository.findAll();
 
         model.addAttribute("omitAccounts", siteRequestAccountOmits);
@@ -75,6 +83,13 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
 
     @RequestMapping("/{omitAccountId}/edit")
     public String adminOmitAccountEdit(@PathVariable("omitAccountId") String omitAccountId, Model model) {
+        OidcAuthenticationToken token = getTokenWithoutContext();
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+
+        if (Boolean.parseBoolean(oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE))) {
+            return "siterequest_error";
+        }
+
         SiteRequestAccountOmit siteRequestAccountOmit = siteRequestAccountOmitRepository.findById(Long.parseLong(omitAccountId)).orElse(null);
 
         if (siteRequestAccountOmit != null) {
@@ -86,6 +101,13 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
 
     @RequestMapping("/update")
     public String adminOmitAccountUpdate(@RequestParam("action") String action, SiteRequestAccountOmit siteRequestAccountOmit, Model model) {
+        OidcAuthenticationToken token = getTokenWithoutContext();
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+
+        if (Boolean.parseBoolean(oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE))) {
+            return "siterequest_error";
+        }
+
         if ("submit".equalsIgnoreCase(action)) {
             if (siteRequestAccountOmit.getNote() != null) {
                 final int noteLength = siteRequestAccountOmit.getNote().length();
@@ -106,6 +128,10 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
+        if (Boolean.parseBoolean(oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE))) {
+            return "siterequest_error";
+        }
+
         model.addAttribute("create", true);
 
         SiteRequestAccountOmit siteRequestAccountOmit = new SiteRequestAccountOmit();
@@ -117,6 +143,13 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
 
     @RequestMapping("/submit")
     public String adminOmitAccountCreate(@RequestParam("action") String action, SiteRequestAccountOmit siteRequestAccountOmit, Model model) {
+        OidcAuthenticationToken token = getTokenWithoutContext();
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+
+        if (Boolean.parseBoolean(oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE))) {
+            return "siterequest_error";
+        }
+
         if ("submit".equalsIgnoreCase(action)) {
             if (siteRequestAccountOmit.getNote() != null) {
                 final int noteLength = siteRequestAccountOmit.getNote().length();
@@ -142,9 +175,15 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
 
     @RequestMapping("/{omitAccountId}/delete")
     public String adminOmitAccountDelete(@PathVariable("omitAccountId") String omitAccountId, Model model) {
+        OidcAuthenticationToken token = getTokenWithoutContext();
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+
+        if (Boolean.parseBoolean(oidcTokenUtils.getCustomValue(Constants.IS_FRONTEND_MODE))) {
+            return "siterequest_error";
+        }
+
         siteRequestAccountOmitRepository.deleteById(Long.parseLong(omitAccountId));
 
         return adminMain(model);
     }
-
 }

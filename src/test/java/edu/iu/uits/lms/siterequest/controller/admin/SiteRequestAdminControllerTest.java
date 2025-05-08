@@ -33,36 +33,24 @@ package edu.iu.uits.lms.siterequest.controller.admin;
  * #L%
  */
 
-import edu.iu.uits.lms.canvas.model.Account;
-import edu.iu.uits.lms.canvas.model.Course;
-import edu.iu.uits.lms.canvas.model.User;
 import edu.iu.uits.lms.canvas.services.AccountService;
-import edu.iu.uits.lms.canvas.services.CanvasService;
-import edu.iu.uits.lms.canvas.services.ContentMigrationService;
-import edu.iu.uits.lms.canvas.services.CourseService;
-import edu.iu.uits.lms.canvas.services.TermService;
-import edu.iu.uits.lms.canvas.services.UserService;
 import edu.iu.uits.lms.common.server.ServerInfo;
-import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
-import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
-import edu.iu.uits.lms.iuonly.services.TemplateAuditService;
+import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.TestUtils;
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
+import edu.iu.uits.lms.siterequest.config.ApplicationConfig;
 import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
 import edu.iu.uits.lms.siterequest.controller.SiteRequestController;
-import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
-import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
+import edu.iu.uits.lms.siterequest.service.Constants;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -76,13 +64,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@WebMvcTest(value = SiteRequestController.class, properties = {"oauth.tokenprovider.url=http://foo"})
-@ContextConfiguration(classes = {ToolConfig.class, SiteRequestController.class, SecurityConfig.class})
-public class SiteRequestControllerTest {
+@WebMvcTest(value = SiteRequestAdminController.class, properties = {"oauth.tokenprovider.url=http://foo"})
+@ContextConfiguration(classes = {ApplicationConfig.class, ToolConfig.class, SiteRequestAdminController.class, SecurityConfig.class})
+
+public class SiteRequestAdminControllerTest {
 
    @Autowired
    private MockMvc mvc;
@@ -90,27 +77,11 @@ public class SiteRequestControllerTest {
    @MockBean
    private AccountService accountService;
    @MockBean
-   private CourseService courseService;
-   @MockBean
-   private ResourceBundleMessageSource messageSource;
-   @MockBean
-   private CanvasService canvasService;
-   @MockBean
-   private TermService termService;
-   @MockBean
-   private UserService userService;
-   @MockBean
-   private FeatureAccessServiceImpl featureAccessService;
-   @MockBean
-   private SiteRequestPropertyRepository siteRequestPropertyRepository;
-   @MockBean
-   private HierarchyResourceRepository hierarchyResourceRepository;
-   @MockBean
    private SiteRequestAccountOmitRepository siteRequestAccountOmitRepository;
    @MockBean
-   private TemplateAuditService templateAuditService;
+   private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
    @MockBean
-   private ContentMigrationService contentMigrationService;
+   private AuthorizedUserService authorizedUserService;
    @MockBean
    private LmsDefaultGrantedAuthoritiesMapper defaultGrantedAuthoritiesMapper;
    @MockBean
@@ -120,42 +91,30 @@ public class SiteRequestControllerTest {
 
    private static String userLoginId = "userLoginId1";
 
-   @BeforeEach
-   public void mockCommonStuff() {
-      Mockito.when(courseService.getCoursesTaughtBy(any(), anyBoolean(), anyBoolean(), anyBoolean()))
-              .thenReturn(List.of(new Course()));
+   @Test
+   public void frontendModeSupplied() throws Exception {
+      Map<String, Object> extraAttributesMap = new HashMap<>();
+      extraAttributesMap.put(LTIConstants.CLAIMS_KEY_ROLES, List.of(LTIConstants.CANVAS_INSTRUCTOR_ROLE));
 
-      Account account1 = new Account();
-      account1.setId("1");
+      Map<String, Object> customAttributesMap = new HashMap<>();
+      customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
+      customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
+      customAttributesMap.put(Constants.IS_FRONTEND_MODE, "true");
 
-      Account account2 = new Account();
-      account2.setId("2");
+      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_AUTHORITY, extraAttributesMap, customAttributesMap);
 
-      Account account3 = new Account();
-      account3.setId("3");
+      SecurityContextHolder.getContext().setAuthentication(token);
 
-      Mockito.when(accountService.getAccountsForUser(userLoginId))
-              .thenReturn(List.of(account1, account2, account3));
+      ResultActions resultActions = mvc.perform(get("/app/admin/omitaccount/launch")
+              .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+              .contentType(MediaType.APPLICATION_JSON));
 
-      SiteRequestAccountOmit siteRequestAccountOmit1 = new SiteRequestAccountOmit();
-      siteRequestAccountOmit1.setAccountIdToOmit(1L);
-
-      SiteRequestAccountOmit siteRequestAccountOmit2 = new SiteRequestAccountOmit();
-      siteRequestAccountOmit2.setAccountIdToOmit(2L);
-
-      Mockito.when(siteRequestAccountOmitRepository.findAll()).thenReturn(List.of(siteRequestAccountOmit1, siteRequestAccountOmit2));
-
-      User user1 = new User();
-      user1.setName("name1");
-
-      Mockito.when(userService.getUserBySisLoginId(userLoginId)).thenReturn(user1);
-
+      Assertions.assertEquals(200, resultActions.andReturn().getResponse().getStatus());
+      Assertions.assertEquals("siterequest_error", resultActions.andReturn().getModelAndView().getViewName());
    }
 
    @Test
-   public void omitAccount_UserIsNotAdminSomeAccountsRemoved() throws Exception {
-      final String userLoginId = "userLoginId1";
-
+   public void frontendModeNotSupplied() throws Exception {
       Map<String, Object> extraAttributesMap = new HashMap<>();
       extraAttributesMap.put(LTIConstants.CLAIMS_KEY_ROLES, List.of(LTIConstants.CANVAS_INSTRUCTOR_ROLE));
 
@@ -163,48 +122,35 @@ public class SiteRequestControllerTest {
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
 
-      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_ROLE, extraAttributesMap, customAttributesMap);
+      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_AUTHORITY, extraAttributesMap, customAttributesMap);
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
-      ResultActions resultActions = mvc.perform(get("/app/createsite")
-            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
-            .contentType(MediaType.APPLICATION_JSON));
+      ResultActions resultActions = mvc.perform(get("/app/admin/omitaccount/launch")
+              .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+              .contentType(MediaType.APPLICATION_JSON));
 
       Assertions.assertEquals(200, resultActions.andReturn().getResponse().getStatus());
-
-      List<Account> accounts = (List<Account>) resultActions.andReturn().getModelAndView().getModel().get("accounts");
-
-      Assertions.assertNotNull(accounts);
-      Assertions.assertEquals(1, accounts.size());
-      Assertions.assertEquals("3", accounts.getFirst().getId());
+      Assertions.assertEquals("admin/omitAccount", resultActions.andReturn().getModelAndView().getViewName());
    }
 
    @Test
-   public void omitAccount_UserIsAdminAccountsNotRemoved() throws Exception {
-      final String userLoginId = "userLoginId1";
-
+   public void userNotInstructorRole() throws Exception {
       Map<String, Object> extraAttributesMap = new HashMap<>();
-      extraAttributesMap.put(LTIConstants.CLAIMS_KEY_ROLES, List.of(LTIConstants.CANVAS_ADMIN_ROLE));
+      extraAttributesMap.put(LTIConstants.CLAIMS_KEY_ROLES, List.of(LTIConstants.BASE_USER_AUTHORITY));
 
       Map<String, Object> customAttributesMap = new HashMap<>();
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
       customAttributesMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, userLoginId);
 
-      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.ADMIN_ROLE, extraAttributesMap, customAttributesMap);
+      OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.BASE_USER_AUTHORITY, extraAttributesMap, customAttributesMap);
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
-      ResultActions resultActions = mvc.perform(get("/app/createsite")
+      ResultActions resultActions = mvc.perform(get("/app/admin/omitaccount/launch")
               .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
               .contentType(MediaType.APPLICATION_JSON));
 
-      Assertions.assertEquals(200, resultActions.andReturn().getResponse().getStatus());
-
-      List<Account> accounts = (List<Account>) resultActions.andReturn().getModelAndView().getModel().get("accounts");
-
-      Assertions.assertNotNull(accounts);
-      Assertions.assertEquals(3, accounts.size());
+      Assertions.assertEquals(403, resultActions.andReturn().getResponse().getStatus());
    }
-
 }

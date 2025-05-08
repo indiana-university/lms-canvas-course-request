@@ -33,7 +33,9 @@ package edu.iu.uits.lms.siterequest.services;
  * #L%
  */
 
+import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
 import edu.iu.uits.lms.lti.config.TestUtils;
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
@@ -71,6 +73,12 @@ public class RestLaunchSecurityTest {
 
    @MockBean
    private SiteRequestPropertyRepository siteRequestPropertyRepository = null;
+
+   @MockBean
+   private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
+
+   @MockBean
+   private AuthorizedUserService authorizedUserService;
 
    @MockBean
    private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
