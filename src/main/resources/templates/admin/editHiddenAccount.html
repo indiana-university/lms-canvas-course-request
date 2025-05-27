@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--
+  #%L
+  siterequest
+  %%
+  Copyright (C) 2015 - 2025 Indiana University
+  %%
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+  
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+  
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+  
+  3. Neither the name of the Indiana University nor the names of its contributors
+     may be used to endorse or promote products derived from this software without
+     specific prior written permission.
+  
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGE.
+  #L%
+  -->
+
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+  <head>
+    <title>Site Request</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/app/css/admin/siterequest-hiddenaccount.css}"/>
+  </head>
+
+  <body>
+    <div layout:fragment="content">
+      <div class="rvt-p-tb-md">
+        <h1 id="tool-title" class="rvt-ts-36">Site Request Admin Tool</h1>
+      </div>
+
+      <div id="siterequest-edit-hidden-account" class="rvt-width-xl">
+        <h2 id="page-title" class="rvt-ts-23 rvt-text-bold rvt-m-bottom-sm" th:text="${create} ? 'Create new account to hide' : | Edit account to hide ${hiddenAccountForm.accountIdToHide}|">Edit Account to hide</h2>
+
+        <form id="siterequest-hiddenaccount-form-submit" th:object="${hiddenAccountForm}" th:action="${create}? @{|/app/admin/hideaccount/submit|} : @{|/app/admin/hideaccount/update|}" method="post" enctype="multipart/form-data">
+          <fieldset class="rvt-fieldset rvt-m-top-md">
+            <legend class="rvt-legend [ rvt-text-bold rvt-ts-18 rvt-border-bottom rvt-p-bottom-xs ]">Hidden account details</legend>
+
+            <label for="siterequest-hiddenaccount-account-id" class="rvt-label rvt-m-top-sm rvt-ts-16 required-label">Account ID To Hide</label>
+            <input th:field="*{accountIdToHide}" th:disabled="${create == null}"
+                   type="text" id="siterequest-hiddenaccount-account-id"
+                   class="rvt-text-input required-input" aria-required="true" data-error-id="ui-hiddenaccount-id-error" />
+            <div th:insert="~{fragments.html :: textInputError(errorMsg='Account ID to hide is required.', errorId='ui-hiddenaccount-id-error')}"></div>
+            <input type="hidden" th:field="*{accountIdToHide}" th:if="${create == null}" />
+
+            <label for="siterequest-hiddenaccount-account-name" class="rvt-label rvt-m-top-sm rvt-ts-16">Account Name To Hide</label>
+            <input type="text" id="siterequest-hiddenaccount-account-name" th:disabled="true" th:field="*{accountNameToHide}" class="rvt-text-input required-input" aria-required="false" />
+            <input type="hidden" th:field="*{accountNameToHide}" th:if="${create == null}" />
+
+            <label for="siterequest-hiddenaccount-note" class="rvt-label rvt-m-top-sm rvt-ts-16">Note</label>
+            <input type="text" id="siterequest-hiddenaccount-note" th:field="*{note}" class="rvt-text-input required-input" aria-required="false" />
+
+            <label for="siterequest-hiddenaccount-user-added-by" class="rvt-label rvt-m-top-sm rvt-ts-16">User Added By</label>
+            <input type="text" id="siterequest-hiddenaccount-user-added-by" th:field="*{userAddedBy}" th:disabled="true" class="rvt-text-input required-input" aria-required="false" />
+            <input type="hidden" th:field="*{userAddedBy}" />
+          </fieldset>
+
+          <div class="rvt-button-group rvt-m-top-xl">
+            <button id="siterequest-hiddenaccount-edit-save" class="rvt-button validate-not-empty" name="action" value="submit">
+              <span th:replace="~{fragments.html :: loadingButton(buttonText='Save', srText='Saving Hidden Account')}"></span>
+            </button>
+            <button id="siterequest-hiddenaccount-edit-cancel" class="rvt-button rvt-button--secondary loading-btn" name="action" value="cancel">
+              <span th:replace="~{fragments.html :: loadingButton(buttonText='Cancel and return to list', srText='Loading list of Hidden Accounts')}"></span>
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+    <th:block layout:fragment="script">
+      <script type="text/javascript" th:src="@{/app/js/admin/editHiddenAccount.js}"></script>
+    </th:block>
+  </body>
+</html>
+

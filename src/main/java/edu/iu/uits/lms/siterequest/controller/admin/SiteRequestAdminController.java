@@ -38,10 +38,10 @@ import edu.iu.uits.lms.canvas.services.AccountService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
 import edu.iu.uits.lms.lti.service.OidcTokenUtils;
-import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
-import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
+import edu.iu.uits.lms.siterequest.model.SiteRequestHiddenAccount;
+import edu.iu.uits.lms.siterequest.repository.SiteRequestHiddenAccountRepository;
 import edu.iu.uits.lms.siterequest.service.Constants;
-import edu.iu.uits.lms.siterequest.service.SiteRequestOmitAccountService;
+import edu.iu.uits.lms.siterequest.service.SiteRequestHiddenAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -55,7 +55,7 @@ import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenti
 import java.util.List;
 
 @Controller
-@RequestMapping("/app/admin/omitaccount")
+@RequestMapping("/app/admin/hideaccount")
 @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
 @Slf4j
 public class SiteRequestAdminController extends OidcTokenAwareController {
@@ -63,7 +63,7 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
     private AccountService accountService;
 
     @Autowired
-    private SiteRequestAccountOmitRepository siteRequestAccountOmitRepository;
+    private SiteRequestHiddenAccountRepository siteRequestHiddenAccountRepository;
 
     @RequestMapping("/launch")
     public String adminMain(Model model) {
@@ -74,15 +74,15 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
             return "siterequest_error";
         }
 
-        List<SiteRequestAccountOmit> siteRequestAccountOmits = siteRequestAccountOmitRepository.findAll();
+        List<SiteRequestHiddenAccount> siteRequestHiddenAccounts = siteRequestHiddenAccountRepository.findAll();
 
-        model.addAttribute("omitAccounts", siteRequestAccountOmits);
+        model.addAttribute("hiddenAccounts", siteRequestHiddenAccounts);
 
-        return "admin/omitAccount";
+        return "admin/hiddenAccount";
     }
 
-    @RequestMapping("/{omitAccountId}/edit")
-    public String adminOmitAccountEdit(@PathVariable("omitAccountId") String omitAccountId, Model model) {
+    @RequestMapping("/{hiddenAccountId}/edit")
+    public String adminOmitAccountEdit(@PathVariable("hiddenAccountId") String hiddenAccountId, Model model) {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
@@ -90,17 +90,17 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
             return "siterequest_error";
         }
 
-        SiteRequestAccountOmit siteRequestAccountOmit = siteRequestAccountOmitRepository.findById(Long.parseLong(omitAccountId)).orElse(null);
+        SiteRequestHiddenAccount siteRequestHiddenAccount = siteRequestHiddenAccountRepository.findById(Long.parseLong(hiddenAccountId)).orElse(null);
 
-        if (siteRequestAccountOmit != null) {
-            model.addAttribute("omitAccountForm", siteRequestAccountOmit);
+        if (siteRequestHiddenAccount != null) {
+            model.addAttribute("hiddenAccountForm", siteRequestHiddenAccount);
         }
 
-        return "admin/editOmitAccount";
+        return "admin/editHiddenAccount";
     }
 
     @RequestMapping("/update")
-    public String adminOmitAccountUpdate(@RequestParam("action") String action, SiteRequestAccountOmit siteRequestAccountOmit, Model model) {
+    public String adminOmitAccountUpdate(@RequestParam("action") String action, SiteRequestHiddenAccount siteRequestHiddenAccount, Model model) {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
@@ -109,15 +109,15 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
         }
 
         if ("submit".equalsIgnoreCase(action)) {
-            if (siteRequestAccountOmit.getNote() != null) {
-                final int noteLength = siteRequestAccountOmit.getNote().length();
+            if (siteRequestHiddenAccount.getNote() != null) {
+                final int noteLength = siteRequestHiddenAccount.getNote().length();
 
                 // if the note is longer than the database field, truncate the note to the database field length
-                siteRequestAccountOmit.setNote(siteRequestAccountOmit.getNote().substring(0,
-                        Math.min(noteLength, SiteRequestOmitAccountService.MAXIMUM_NOTE_LENGTH)));
+                siteRequestHiddenAccount.setNote(siteRequestHiddenAccount.getNote().substring(0,
+                        Math.min(noteLength, SiteRequestHiddenAccountService.MAXIMUM_NOTE_LENGTH)));
             }
 
-            siteRequestAccountOmitRepository.save(siteRequestAccountOmit);
+            siteRequestHiddenAccountRepository.save(siteRequestHiddenAccount);
         }
 
         return adminMain(model);
@@ -134,15 +134,15 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
 
         model.addAttribute("create", true);
 
-        SiteRequestAccountOmit siteRequestAccountOmit = new SiteRequestAccountOmit();
-        siteRequestAccountOmit.setUserAddedBy(oidcTokenUtils.getUserLoginId());
-        model.addAttribute("omitAccountForm", siteRequestAccountOmit);
+        SiteRequestHiddenAccount siteRequestHiddenAccount = new SiteRequestHiddenAccount();
+        siteRequestHiddenAccount.setUserAddedBy(oidcTokenUtils.getUserLoginId());
+        model.addAttribute("hiddenAccountForm", siteRequestHiddenAccount);
 
-        return "admin/editOmitAccount";
+        return "admin/editHiddenAccount";
      }
 
     @RequestMapping("/submit")
-    public String adminOmitAccountCreate(@RequestParam("action") String action, SiteRequestAccountOmit siteRequestAccountOmit, Model model) {
+    public String adminOmitAccountCreate(@RequestParam("action") String action, SiteRequestHiddenAccount siteRequestHiddenAccount, Model model) {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
@@ -151,30 +151,28 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
         }
 
         if ("submit".equalsIgnoreCase(action)) {
-            if (siteRequestAccountOmit.getNote() != null) {
-                final int noteLength = siteRequestAccountOmit.getNote().length();
+            if (siteRequestHiddenAccount.getNote() != null) {
+                final int noteLength = siteRequestHiddenAccount.getNote().length();
 
                 // if the note is longer than the database field, truncate the note to the database field length
-                siteRequestAccountOmit.setNote(siteRequestAccountOmit.getNote().substring(0,
-                        Math.min(noteLength, SiteRequestOmitAccountService.MAXIMUM_NOTE_LENGTH)));
+                siteRequestHiddenAccount.setNote(siteRequestHiddenAccount.getNote().substring(0,
+                        Math.min(noteLength, SiteRequestHiddenAccountService.MAXIMUM_NOTE_LENGTH)));
             }
 
-            if (siteRequestAccountOmit.getNote() == null || siteRequestAccountOmit.getNote().isEmpty()) {
-                final Account account = accountService.getAccount(siteRequestAccountOmit.getAccountIdToOmit().toString());
+            final Account account = accountService.getAccount(siteRequestHiddenAccount.getAccountIdToHide().toString());
 
-                if (account != null) {
-                    siteRequestAccountOmit.setNote(String.format(SiteRequestOmitAccountService.DEFAULT_NOTE_FORMAT_STRING, account.getName()));
-                }
+            if (account != null) {
+                siteRequestHiddenAccount.setAccountNameToHide(account.getName());
             }
 
-            siteRequestAccountOmitRepository.save(siteRequestAccountOmit);
+            siteRequestHiddenAccountRepository.save(siteRequestHiddenAccount);
         }
 
         return adminMain(model);
     }
 
-    @RequestMapping("/{omitAccountId}/delete")
-    public String adminOmitAccountDelete(@PathVariable("omitAccountId") String omitAccountId, Model model) {
+    @RequestMapping("/{hiddenAccountId}/delete")
+    public String adminOmitAccountDelete(@PathVariable("hiddenAccountId") String hiddenAccountId, Model model) {
         OidcAuthenticationToken token = getTokenWithoutContext();
         OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
@@ -182,7 +180,7 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
             return "siterequest_error";
         }
 
-        siteRequestAccountOmitRepository.deleteById(Long.parseLong(omitAccountId));
+        siteRequestHiddenAccountRepository.deleteById(Long.parseLong(hiddenAccountId));
 
         return adminMain(model);
     }

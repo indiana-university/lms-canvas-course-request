@@ -1,5 +1,3 @@
-package edu.iu.uits.lms.siterequest.repository;
-
 /*-
  * #%L
  * siterequest
@@ -32,20 +30,17 @@ package edu.iu.uits.lms.siterequest.repository;
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+jQuery(document).ready(function($) {
+    let saveButton = $("#siterequest-hiddenaccount-edit-save");
 
-import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.repository.ListCrudRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.rest.core.annotation.Description;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.stereotype.Component;
+    if (saveButton.length === 1) {
+        $("#siterequest-hiddenaccount-edit-save").click(function(event) {
+            let accountIdToHideInput = $('#siterequest-hiddenaccount-account');
 
-@Component
-@RepositoryRestResource(path = "site-request-account-omit",
-        itemResourceDescription = @Description("Site Request Account Omit"),
-        collectionResourceDescription = @Description("Site Request Account Omit"))
-@Tag(name = "SiteRequestAccountOmitRepository", description = "Interact with Theme CRUD operations")
-public interface SiteRequestAccountOmitRepository extends PagingAndSortingRepository<SiteRequestAccountOmit, Long>,
-        ListCrudRepository<SiteRequestAccountOmit, Long> {
-}
+            if (accountIdToHideInput.length === 1 && accountIdToHideInput.first().val().trim().length === 0) {
+                $("#ui-hiddenaccount-id-error").removeClass("rvt-display-none");
+                event.preventDefault();
+            }
+       });
+   }
+});

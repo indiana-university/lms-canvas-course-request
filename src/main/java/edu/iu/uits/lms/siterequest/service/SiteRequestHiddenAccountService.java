@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.siterequest.model;
+package edu.iu.uits.lms.siterequest.service;
 
 /*-
  * #%L
@@ -33,46 +33,27 @@ package edu.iu.uits.lms.siterequest.model;
  * #L%
  */
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import edu.iu.uits.lms.canvas.model.Account;
+import edu.iu.uits.lms.canvas.services.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 
-@Entity
-@Table(name = "SITEREQUEST_ACCOUNT_OMIT")
-@Data
-@NoArgsConstructor
-public class SiteRequestAccountOmit implements Serializable {
-    @Id
-    @Column(name = "ACCOUNT_ID_TO_OMIT")
-    private Long accountIdToOmit;
+@Service
+public class SiteRequestHiddenAccountService {
+    @Autowired
+    private AccountService accountService;
 
-    @Column(name = "NOTE")
-    private String note;
+    public static final int MAXIMUM_NOTE_LENGTH = 255;
 
-    @Column(name = "USER_ADDED_BY")
-    private String userAddedBy;
+    public List<Account> getAccountByName(String name) {
+        List<Account> accounts = accountService.getSubAccounts();
+        accounts = accounts.stream()
+                .filter(account -> name.equals(account.getName()))
+                .toList();
 
-    @Column(name = "CREATEDON")
-    private Date createdOn;
-
-    @Column(name = "MODIFIEDON")
-    private Date modifiedOn;
-
-    @PreUpdate
-    @PrePersist
-    public void updateTimeStamps() {
-        modifiedOn = new Date();
-        if (createdOn == null) {
-            createdOn = new Date();
-        }
+        return accounts;
     }
+
 }

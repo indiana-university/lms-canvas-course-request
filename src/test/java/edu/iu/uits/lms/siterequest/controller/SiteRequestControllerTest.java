@@ -54,8 +54,8 @@ import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.siterequest.config.ApplicationConfig;
 import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
-import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
-import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
+import edu.iu.uits.lms.siterequest.model.SiteRequestHiddenAccount;
+import edu.iu.uits.lms.siterequest.repository.SiteRequestHiddenAccountRepository;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
 import edu.iu.uits.lms.siterequest.service.Constants;
 import org.junit.jupiter.api.Assertions;
@@ -111,7 +111,7 @@ public class SiteRequestControllerTest {
    @MockBean
    private HierarchyResourceRepository hierarchyResourceRepository;
    @MockBean
-   private SiteRequestAccountOmitRepository siteRequestAccountOmitRepository;
+   private SiteRequestHiddenAccountRepository siteRequestHiddenAccountRepository;
    @MockBean
    private TemplateAuditService templateAuditService;
    @MockBean
@@ -148,13 +148,13 @@ public class SiteRequestControllerTest {
       Mockito.when(accountService.getAccountsForUser(userLoginId))
               .thenReturn(List.of(account1, account2, account3));
 
-      SiteRequestAccountOmit siteRequestAccountOmit1 = new SiteRequestAccountOmit();
-      siteRequestAccountOmit1.setAccountIdToOmit(1L);
+      SiteRequestHiddenAccount siteRequestHiddenAccount1 = new SiteRequestHiddenAccount();
+      siteRequestHiddenAccount1.setAccountIdToHide(1L);
 
-      SiteRequestAccountOmit siteRequestAccountOmit2 = new SiteRequestAccountOmit();
-      siteRequestAccountOmit2.setAccountIdToOmit(2L);
+      SiteRequestHiddenAccount siteRequestHiddenAccount2 = new SiteRequestHiddenAccount();
+      siteRequestHiddenAccount2.setAccountIdToHide(2L);
 
-      Mockito.when(siteRequestAccountOmitRepository.findAll()).thenReturn(List.of(siteRequestAccountOmit1, siteRequestAccountOmit2));
+      Mockito.when(siteRequestHiddenAccountRepository.findAll()).thenReturn(List.of(siteRequestHiddenAccount1, siteRequestHiddenAccount2));
 
       User user1 = new User();
       user1.setName("name1");

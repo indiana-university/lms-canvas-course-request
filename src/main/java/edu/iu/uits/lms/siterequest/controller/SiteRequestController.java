@@ -65,15 +65,14 @@ import edu.iu.uits.lms.iuonly.services.TemplateAuditService;
 import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
 import edu.iu.uits.lms.lti.service.OidcTokenUtils;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
-import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
+import edu.iu.uits.lms.siterequest.model.SiteRequestHiddenAccount;
 import edu.iu.uits.lms.siterequest.model.SiteRequestProperty;
-import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
+import edu.iu.uits.lms.siterequest.repository.SiteRequestHiddenAccountRepository;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
 import edu.iu.uits.lms.siterequest.service.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -84,14 +83,11 @@ import uk.ac.ox.ctl.lti13.lti.Role;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import java.text.MessageFormat;
-import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -120,7 +116,7 @@ public class SiteRequestController extends OidcTokenAwareController {
     @Autowired
     private HierarchyResourceRepository hierarchyResourceRepository = null;
     @Autowired
-    private SiteRequestAccountOmitRepository siteRequestAccountOmitRepository = null;
+    private SiteRequestHiddenAccountRepository siteRequestHiddenAccountRepository = null;
     @Autowired
     private ToolConfig toolConfig = null;
     @Autowired
@@ -163,15 +159,15 @@ public class SiteRequestController extends OidcTokenAwareController {
         final boolean isAdmin = roles.contains(Role.Institution.ADMINISTRATOR);
 
         if (! isAdmin) {
-            List<SiteRequestAccountOmit> siteRequestAccountOmits = siteRequestAccountOmitRepository.findAll();
+            List<SiteRequestHiddenAccount> siteRequestHiddenAccounts = siteRequestHiddenAccountRepository.findAll();
 
-            if (! siteRequestAccountOmits.isEmpty()) {
-                List<String> siteRequestAccountOmitIds = siteRequestAccountOmits.stream()
-                        .map(siteRequestAccountOmit -> siteRequestAccountOmit.getAccountIdToOmit().toString())
+            if (! siteRequestHiddenAccounts.isEmpty()) {
+                List<String> siteRequestHiddenAccountIds = siteRequestHiddenAccounts.stream()
+                        .map(siteRequestAccountOmit -> siteRequestAccountOmit.getAccountIdToHide().toString())
                         .toList();
 
                 accounts = accounts.stream()
-                        .filter(account -> ! siteRequestAccountOmitIds.contains(account.getId()))
+                        .filter(account -> ! siteRequestHiddenAccountIds.contains(account.getId()))
                         .toList();
             }
         }

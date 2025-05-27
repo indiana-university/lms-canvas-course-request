@@ -34,9 +34,9 @@ package edu.iu.uits.lms.siterequest.controller.rest;
  */
 
 import edu.iu.uits.lms.canvas.model.Account;
-import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
-import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
-import edu.iu.uits.lms.siterequest.service.SiteRequestOmitAccountService;
+import edu.iu.uits.lms.siterequest.model.SiteRequestHiddenAccount;
+import edu.iu.uits.lms.siterequest.repository.SiteRequestHiddenAccountRepository;
+import edu.iu.uits.lms.siterequest.service.SiteRequestHiddenAccountService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,14 +49,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rest/site-request-account-omit")
-@Tag(name = "SiteRequestAccountOmitCustom")
-public class SiteRequestAccountOmitRestController {
+@RequestMapping("/rest/site-request-hidden-account")
+@Tag(name = "SiteRequestHiddenAccountCustom")
+public class SiteRequestHiddenAccountRestController {
    @Autowired
-   private SiteRequestOmitAccountService siteRequestOmitAccountService;
+   private SiteRequestHiddenAccountService siteRequestHiddenAccountService;
 
    @Autowired
-   private SiteRequestAccountOmitRepository siteRequestAccountOmitRepository;
+   private SiteRequestHiddenAccountRepository siteRequestHiddenAccountRepository;
 
    @PostMapping("/{name}/createbyname")
    public ResponseEntity createByName(@PathVariable String name) {
@@ -64,7 +64,7 @@ public class SiteRequestAccountOmitRestController {
          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No account name supplied");
       }
 
-      List<Account> accounts = siteRequestOmitAccountService.getAccountByName(name);
+      List<Account> accounts = siteRequestHiddenAccountService.getAccountByName(name);
 
       if (accounts.isEmpty()) {
          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find the account for the name supplied");
@@ -76,12 +76,12 @@ public class SiteRequestAccountOmitRestController {
 
       Account account = accounts.getFirst();
 
-      SiteRequestAccountOmit siteRequestAccountOmit = new SiteRequestAccountOmit();
+      SiteRequestHiddenAccount siteRequestAccountOmit = new SiteRequestHiddenAccount();
 
       Long id = Long.parseLong(account.getId());
-      siteRequestAccountOmit.setAccountIdToOmit(id);
-      siteRequestAccountOmit.setNote(String.format(SiteRequestOmitAccountService.DEFAULT_NOTE_FORMAT_STRING, name));
+      siteRequestAccountOmit.setAccountIdToHide(id);
+      siteRequestAccountOmit.setAccountNameToHide(name);
 
-      return ResponseEntity.status(HttpStatus.CREATED).body(siteRequestAccountOmitRepository.save(siteRequestAccountOmit));
+      return ResponseEntity.status(HttpStatus.CREATED).body(siteRequestHiddenAccountRepository.save(siteRequestAccountOmit));
    }
 }

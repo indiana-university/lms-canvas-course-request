@@ -1,3 +1,5 @@
+package edu.iu.uits.lms.siterequest.repository;
+
 /*-
  * #%L
  * siterequest
@@ -30,19 +32,20 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-$('#omitAccountTable').DataTable({
-   orderCellsTop: true,
-   paging: false,
-   order: [[0, 'asc']],
-   language: {
-       // Setting the text for the search label, mostly to remove the colon that is there by default
-       search: 'Search',
-       select: {
-          aria: {
-          }
-       }
-   },
-    columnDefs: [
-               { targets: ['.colDelete'], orderable: false }
-           ]
-   });
+
+import edu.iu.uits.lms.siterequest.model.SiteRequestHiddenAccount;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.core.annotation.Description;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.stereotype.Component;
+
+@Component
+@RepositoryRestResource(path = "site-request-hidden-account",
+        itemResourceDescription = @Description("Site Request Hidden Account"),
+        collectionResourceDescription = @Description("Site Request Hidden Account"))
+@Tag(name = "SiteRequestHiddenAccountRepository", description = "Interact with Hidden Account CRUD operations")
+public interface SiteRequestHiddenAccountRepository extends PagingAndSortingRepository<SiteRequestHiddenAccount, Long>,
+        ListCrudRepository<SiteRequestHiddenAccount, Long> {
+}

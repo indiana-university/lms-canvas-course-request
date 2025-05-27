@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.siterequest.service;
+package edu.iu.uits.lms.siterequest.model;
 
 /*-
  * #%L
@@ -33,28 +33,48 @@ package edu.iu.uits.lms.siterequest.service;
  * #L%
  */
 
-import edu.iu.uits.lms.canvas.model.Account;
-import edu.iu.uits.lms.canvas.services.AccountService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.Date;
 
-@Service
-public class SiteRequestOmitAccountService {
-    @Autowired
-    private AccountService accountService;
+@Entity
+@Table(name = "SITEREQUEST_HIDDEN_ACCOUNT")
+@Data
+@NoArgsConstructor
+public class SiteRequestHiddenAccount implements Serializable {
+    @Id
+    @Column(name = "ACCOUNT_ID_TO_HIDE")
+    private Long accountIdToHide;
 
-    public static final String DEFAULT_NOTE_FORMAT_STRING = "Account Name (as of this record insertion) is %s";
-    public static final int MAXIMUM_NOTE_LENGTH = 255;
+    @Column(name = "ACCOUNT_NAME_TO_HIDE")
+    private String accountNameToHide;
 
-    public List<Account> getAccountByName(String name) {
-        List<Account> accounts = accountService.getSubAccounts();
-        accounts = accounts.stream()
-                .filter(account -> name.equals(account.getName()))
-                .toList();
+    @Column(name = "NOTE")
+    private String note;
 
-        return accounts;
+    @Column(name = "USER_ADDED_BY")
+    private String userAddedBy;
+
+    @Column(name = "CREATEDON")
+    private Date createdOn;
+
+    @Column(name = "MODIFIEDON")
+    private Date modifiedOn;
+
+    @PreUpdate
+    @PrePersist
+    public void updateTimeStamps() {
+        modifiedOn = new Date();
+        if (createdOn == null) {
+            createdOn = new Date();
+        }
     }
-
 }
