@@ -50,6 +50,10 @@
       <div id="siterequest-edit-hidden-account" class="rvt-width-xl">
         <h2 id="page-title" class="rvt-ts-23 rvt-text-bold rvt-m-bottom-sm" th:text="${create} ? 'Create new account to hide' : | Edit account to hide ${hiddenAccountForm.accountIdToHide}|">Edit Account to hide</h2>
 
+        <div th:if="${backendValidationError}" class="rvt-alert rvt-alert--danger rvt-m-bottom-md rvt-width-xl" role="alert" >
+          <p class="rvt-alert__message" th:text="${backendValidationError}" id="validation-error">Error: </p>
+        </div>
+
         <form id="siterequest-hiddenaccount-form-submit" th:object="${hiddenAccountForm}" th:action="${create}? @{|/app/admin/hideaccount/submit|} : @{|/app/admin/hideaccount/update|}" method="post" enctype="multipart/form-data">
           <fieldset class="rvt-fieldset rvt-m-top-md">
             <legend class="rvt-legend [ rvt-text-bold rvt-ts-18 rvt-border-bottom rvt-p-bottom-xs ]">Hidden account details</legend>
@@ -61,15 +65,15 @@
             <div th:insert="~{fragments.html :: textInputError(errorMsg='Account ID to hide is required.', errorId='ui-hiddenaccount-id-error')}"></div>
             <input type="hidden" th:field="*{accountIdToHide}" th:if="${create == null}" />
 
-            <label for="siterequest-hiddenaccount-account-name" class="rvt-label rvt-m-top-sm rvt-ts-16">Account Name To Hide</label>
-            <input type="text" id="siterequest-hiddenaccount-account-name" th:disabled="true" th:field="*{accountNameToHide}" class="rvt-text-input required-input" aria-required="false" />
-            <input type="hidden" th:field="*{accountNameToHide}" th:if="${create == null}" />
+            <label th:if="${create == null}" for="siterequest-hiddenaccount-account-name" class="rvt-label rvt-m-top-sm rvt-ts-16">Account Name To Hide</label>
+            <input th:if="${create == null}" type="text" id="siterequest-hiddenaccount-account-name" th:disabled="true" th:field="*{accountNameToHide}" class="rvt-text-input required-input" aria-required="false" />
+            <input type="hidden" th:field="*{accountNameToHide}" />
 
             <label for="siterequest-hiddenaccount-note" class="rvt-label rvt-m-top-sm rvt-ts-16">Note</label>
             <input type="text" id="siterequest-hiddenaccount-note" th:field="*{note}" class="rvt-text-input required-input" aria-required="false" />
 
-            <label for="siterequest-hiddenaccount-user-added-by" class="rvt-label rvt-m-top-sm rvt-ts-16">User Added By</label>
-            <input type="text" id="siterequest-hiddenaccount-user-added-by" th:field="*{userAddedBy}" th:disabled="true" class="rvt-text-input required-input" aria-required="false" />
+            <label th:if="${create == null}" for="siterequest-hiddenaccount-user-added-by" class="rvt-label rvt-m-top-sm rvt-ts-16">User Added By</label>
+            <input th:if="${create == null}" type="text" id="siterequest-hiddenaccount-user-added-by" th:field="*{userAddedBy}" th:disabled="true" class="rvt-text-input required-input" aria-required="false" />
             <input type="hidden" th:field="*{userAddedBy}" />
           </fieldset>
 

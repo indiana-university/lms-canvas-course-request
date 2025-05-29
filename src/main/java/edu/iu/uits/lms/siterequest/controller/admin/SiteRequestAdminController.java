@@ -53,6 +53,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/app/admin/hideaccount")
@@ -151,6 +152,16 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
         }
 
         if ("submit".equalsIgnoreCase(action)) {
+            Optional<SiteRequestHiddenAccount> existingSiteRequestHiddenAccount = siteRequestHiddenAccountRepository.findById(siteRequestHiddenAccount.getAccountIdToHide());
+
+            if (existingSiteRequestHiddenAccount.isPresent()) {
+                model.addAttribute("create", true);
+                model.addAttribute("backendValidationError",
+                        String.format("Account ID '%s' is already hidden", siteRequestHiddenAccount.getAccountIdToHide()));
+                model.addAttribute("hiddenAccountForm", siteRequestHiddenAccount);
+                return "admin/editHiddenAccount";
+            }
+
             if (siteRequestHiddenAccount.getNote() != null) {
                 final int noteLength = siteRequestHiddenAccount.getNote().length();
 
@@ -161,10 +172,15 @@ public class SiteRequestAdminController extends OidcTokenAwareController {
 
             final Account account = accountService.getAccount(siteRequestHiddenAccount.getAccountIdToHide().toString());
 
-            if (account != null) {
-                siteRequestHiddenAccount.setAccountNameToHide(account.getName());
+            if (account == null) {
+                model.addAttribute("create", true);
+                model.addAttribute("backendValidationError",
+                        String.format("Invalid Account ID '%s'", siteRequestHiddenAccount.getAccountIdToHide()));
+                model.addAttribute("hiddenAccountForm", siteRequestHiddenAccount);
+                return "admin/editHiddenAccount";
             }
 
+            siteRequestHiddenAccount.setAccountNameToHide(account.getName());
             siteRequestHiddenAccountRepository.save(siteRequestHiddenAccount);
         }
 

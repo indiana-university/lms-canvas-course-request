@@ -35,7 +35,7 @@ jQuery(document).ready(function($) {
 
     if (saveButton.length === 1) {
         $("#siterequest-hiddenaccount-edit-save").click(function(event) {
-            let accountIdToHideInput = $('#siterequest-hiddenaccount-account');
+            let accountIdToHideInput = $('#siterequest-hiddenaccount-account-id');
 
             if (accountIdToHideInput.length === 1 && accountIdToHideInput.first().val().trim().length === 0) {
                 $("#ui-hiddenaccount-id-error").removeClass("rvt-display-none");
