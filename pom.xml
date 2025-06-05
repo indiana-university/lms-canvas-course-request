@@ -66,7 +66,8 @@
         <jdk.source>21</jdk.source>
         <jdk.target>21</jdk.target>
         <jquery.version>3.7.1</jquery.version>
-        <lms-embedded-services.version>6.2.4</lms-embedded-services.version>
+        <logcaptor.version>2.11.0</logcaptor.version>
+        <lms-embedded-services.version>6.2.5</lms-embedded-services.version>
         <lms-canvas-rivet.version>6.2.9.0</lms-canvas-rivet.version>
         <lms-team-spring-boot-it12>6.5.1_1</lms-team-spring-boot-it12>
         <spring-cloud.version>2024.0.1</spring-cloud.version>
@@ -135,6 +136,12 @@
             <artifactId>lms-canvas-services</artifactId>
             <version>${lms-embedded-services.version}</version>
             <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.hakky54</groupId>
+            <artifactId>logcaptor</artifactId>
+            <version>${logcaptor.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

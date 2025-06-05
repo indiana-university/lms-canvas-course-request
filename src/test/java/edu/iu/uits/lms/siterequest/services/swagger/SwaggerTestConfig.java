@@ -41,11 +41,11 @@ import edu.iu.uits.lms.lti.swagger.SwaggerTestingBean;
 import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.SwaggerConfig;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,16 +63,16 @@ import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOM_GROUP_CODE_PATH;
 })
 public class SwaggerTestConfig {
 
-    @MockBean
+    @MockitoBean
     private BufferingApplicationStartup bufferingApplicationStartup;
 
-    @MockBean
+    @MockitoBean
     private LmsDefaultGrantedAuthoritiesMapper defaultGrantedAuthoritiesMapper;
 
-    @MockBean
+    @MockitoBean
     private ClientRegistrationRepository clientRegistrationRepository;
 
-    @MockBean
+    @MockitoBean
     private OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
 
     @Bean

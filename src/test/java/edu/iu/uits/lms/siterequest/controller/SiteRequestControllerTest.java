@@ -65,13 +65,13 @@ import org.junit.jupiter.api.TestInfo;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
@@ -92,39 +92,39 @@ public class SiteRequestControllerTest {
    @Autowired
    private MockMvc mvc;
 
-   @MockBean
+   @MockitoBean
    private AccountService accountService;
-   @MockBean
+   @MockitoBean
    private CourseService courseService;
-   @MockBean
+   @MockitoBean
    private ResourceBundleMessageSource messageSource;
-   @MockBean
+   @MockitoBean
    private CanvasService canvasService;
-   @MockBean
+   @MockitoBean
    private TermService termService;
-   @MockBean
+   @MockitoBean
    private UserService userService;
-   @MockBean
+   @MockitoBean
    private FeatureAccessServiceImpl featureAccessService;
-   @MockBean
+   @MockitoBean
    private SiteRequestPropertyRepository siteRequestPropertyRepository;
-   @MockBean
+   @MockitoBean
    private HierarchyResourceRepository hierarchyResourceRepository;
-   @MockBean
+   @MockitoBean
    private SiteRequestHiddenAccountRepository siteRequestHiddenAccountRepository;
-   @MockBean
+   @MockitoBean
    private TemplateAuditService templateAuditService;
-   @MockBean
+   @MockitoBean
    private ContentMigrationService contentMigrationService;
-   @MockBean
+   @MockitoBean
    private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
-   @MockBean
+   @MockitoBean
    private AuthorizedUserService authorizedUserService;
-   @MockBean
+   @MockitoBean
    private LmsDefaultGrantedAuthoritiesMapper defaultGrantedAuthoritiesMapper;
-   @MockBean
+   @MockitoBean
    private ClientRegistrationRepository clientRegistrationRepository;
-   @MockBean(name = ServerInfo.BEAN_NAME)
+   @MockitoBean(name = ServerInfo.BEAN_NAME)
    private ServerInfo serverInfo;
 
    private static String userLoginId = "userLoginId1";
