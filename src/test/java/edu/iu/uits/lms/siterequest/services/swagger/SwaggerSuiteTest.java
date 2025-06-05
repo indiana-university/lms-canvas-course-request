@@ -51,12 +51,6 @@ import static org.springframework.test.context.NestedTestConfiguration.Enclosing
 @NestedTestConfiguration(INHERIT)
 @SharedSwaggerMocks
 public class SwaggerSuiteTest {
-//    @MockitoBean
-//    private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
-//    @MockitoBean
-//    private AuthorizedUserService authorizedUserService;
-
-
     @Nested
     @SpringBootTest(classes = {SwaggerTestConfig.class})
     public class SwaggerCustomTest extends AbstractSwaggerCustomTest {

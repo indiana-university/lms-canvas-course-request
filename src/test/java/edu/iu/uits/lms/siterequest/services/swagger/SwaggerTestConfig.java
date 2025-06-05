@@ -1,6 +1,4 @@
-package edu.iu.uits.lms.siterequest.services.swagger;
-
-/*-
+package edu.iu.uits.lms.siterequest.services.swagger;/*-
  * #%L
  * siterequest
  * %%
@@ -8,18 +6,18 @@ package edu.iu.uits.lms.siterequest.services.swagger;
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the Indiana University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -36,16 +34,11 @@ package edu.iu.uits.lms.siterequest.services.swagger;
 import edu.iu.uits.lms.iuonly.config.IuCustomRestConfiguration;
 import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import edu.iu.uits.lms.lti.config.LtiRestConfiguration;
-import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.lti.swagger.SwaggerTestingBean;
 import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.SwaggerConfig;
-import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,19 +55,6 @@ import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOM_GROUP_CODE_PATH;
         LtiClientTestConfig.class
 })
 public class SwaggerTestConfig {
-
-    @MockitoBean
-    private BufferingApplicationStartup bufferingApplicationStartup;
-
-    @MockitoBean
-    private LmsDefaultGrantedAuthoritiesMapper defaultGrantedAuthoritiesMapper;
-
-    @MockitoBean
-    private ClientRegistrationRepository clientRegistrationRepository;
-
-    @MockitoBean
-    private OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
-
     @Bean
     public SwaggerTestingBean swaggerTestingBean() {
         SwaggerTestingBean stb = new SwaggerTestingBean();
@@ -85,5 +65,4 @@ public class SwaggerTestConfig {
         stb.setEmbeddedSwaggerToolPaths(expandedList);
         return stb;
     }
-
 }
