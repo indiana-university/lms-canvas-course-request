@@ -117,8 +117,8 @@ public class It12LoggingTest {
 
             SiteRequestProperty siteRequestProperty = new SiteRequestProperty();
             siteRequestProperty.setId(1L);
-            siteRequestProperty.setKey("hey");
-            siteRequestProperty.setValue("ok");
+            siteRequestProperty.setKey("key1");
+            siteRequestProperty.setValue("value1");
 
             Mockito.when(siteRequestPropertyRepository.findAll()).thenReturn(List.of(siteRequestProperty));
 
