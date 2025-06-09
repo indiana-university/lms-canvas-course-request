@@ -1,5 +1,3 @@
-package edu.iu.uits.lms.siterequest.service;
-
 /*-
  * #%L
  * siterequest
@@ -32,29 +30,19 @@ package edu.iu.uits.lms.siterequest.service;
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-
-import edu.iu.uits.lms.canvas.model.Account;
-import edu.iu.uits.lms.canvas.services.AccountService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-@Service
-public class SiteRequestOmitAccountService {
-    @Autowired
-    private AccountService accountService;
-
-    public static final String DEFAULT_NOTE_FORMAT_STRING = "Account Name (as of this record insertion) is %s";
-    public static final int MAXIMUM_NOTE_LENGTH = 255;
-
-    public List<Account> getAccountByName(String name) {
-        List<Account> accounts = accountService.getSubAccounts();
-        accounts = accounts.stream()
-                .filter(account -> name.equals(account.getName()))
-                .toList();
-
-        return accounts;
-    }
-
-}
+$('#hiddenAccountTable').DataTable({
+   orderCellsTop: true,
+   paging: false,
+   order: [[0, 'asc']],
+   language: {
+       // Setting the text for the search label, mostly to remove the colon that is there by default
+       search: 'Search',
+       select: {
+          aria: {
+          }
+       }
+   },
+    columnDefs: [
+               { targets: ['.colDelete'], orderable: false }
+           ]
+   });

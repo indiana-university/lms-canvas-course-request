@@ -54,8 +54,8 @@ import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.siterequest.config.ApplicationConfig;
 import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
-import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
-import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
+import edu.iu.uits.lms.siterequest.model.SiteRequestHiddenAccount;
+import edu.iu.uits.lms.siterequest.repository.SiteRequestHiddenAccountRepository;
 import edu.iu.uits.lms.siterequest.repository.SiteRequestPropertyRepository;
 import edu.iu.uits.lms.siterequest.service.Constants;
 import org.junit.jupiter.api.Assertions;
@@ -65,13 +65,13 @@ import org.junit.jupiter.api.TestInfo;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
@@ -92,39 +92,39 @@ public class SiteRequestControllerTest {
    @Autowired
    private MockMvc mvc;
 
-   @MockBean
+   @MockitoBean
    private AccountService accountService;
-   @MockBean
+   @MockitoBean
    private CourseService courseService;
-   @MockBean
+   @MockitoBean
    private ResourceBundleMessageSource messageSource;
-   @MockBean
+   @MockitoBean
    private CanvasService canvasService;
-   @MockBean
+   @MockitoBean
    private TermService termService;
-   @MockBean
+   @MockitoBean
    private UserService userService;
-   @MockBean
+   @MockitoBean
    private FeatureAccessServiceImpl featureAccessService;
-   @MockBean
+   @MockitoBean
    private SiteRequestPropertyRepository siteRequestPropertyRepository;
-   @MockBean
+   @MockitoBean
    private HierarchyResourceRepository hierarchyResourceRepository;
-   @MockBean
-   private SiteRequestAccountOmitRepository siteRequestAccountOmitRepository;
-   @MockBean
+   @MockitoBean
+   private SiteRequestHiddenAccountRepository siteRequestHiddenAccountRepository;
+   @MockitoBean
    private TemplateAuditService templateAuditService;
-   @MockBean
+   @MockitoBean
    private ContentMigrationService contentMigrationService;
-   @MockBean
+   @MockitoBean
    private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
-   @MockBean
+   @MockitoBean
    private AuthorizedUserService authorizedUserService;
-   @MockBean
+   @MockitoBean
    private LmsDefaultGrantedAuthoritiesMapper defaultGrantedAuthoritiesMapper;
-   @MockBean
+   @MockitoBean
    private ClientRegistrationRepository clientRegistrationRepository;
-   @MockBean(name = ServerInfo.BEAN_NAME)
+   @MockitoBean(name = ServerInfo.BEAN_NAME)
    private ServerInfo serverInfo;
 
    private static String userLoginId = "userLoginId1";
@@ -148,13 +148,13 @@ public class SiteRequestControllerTest {
       Mockito.when(accountService.getAccountsForUser(userLoginId))
               .thenReturn(List.of(account1, account2, account3));
 
-      SiteRequestAccountOmit siteRequestAccountOmit1 = new SiteRequestAccountOmit();
-      siteRequestAccountOmit1.setAccountIdToOmit(1L);
+      SiteRequestHiddenAccount siteRequestHiddenAccount1 = new SiteRequestHiddenAccount();
+      siteRequestHiddenAccount1.setAccountIdToHide(1L);
 
-      SiteRequestAccountOmit siteRequestAccountOmit2 = new SiteRequestAccountOmit();
-      siteRequestAccountOmit2.setAccountIdToOmit(2L);
+      SiteRequestHiddenAccount siteRequestHiddenAccount2 = new SiteRequestHiddenAccount();
+      siteRequestHiddenAccount2.setAccountIdToHide(2L);
 
-      Mockito.when(siteRequestAccountOmitRepository.findAll()).thenReturn(List.of(siteRequestAccountOmit1, siteRequestAccountOmit2));
+      Mockito.when(siteRequestHiddenAccountRepository.findAll()).thenReturn(List.of(siteRequestHiddenAccount1, siteRequestHiddenAccount2));
 
       User user1 = new User();
       user1.setName("name1");

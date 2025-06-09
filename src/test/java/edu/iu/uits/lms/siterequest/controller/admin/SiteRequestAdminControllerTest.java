@@ -43,8 +43,7 @@ import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.siterequest.config.ApplicationConfig;
 import edu.iu.uits.lms.siterequest.config.SecurityConfig;
 import edu.iu.uits.lms.siterequest.config.ToolConfig;
-import edu.iu.uits.lms.siterequest.controller.SiteRequestController;
-import edu.iu.uits.lms.siterequest.repository.SiteRequestAccountOmitRepository;
+import edu.iu.uits.lms.siterequest.repository.SiteRequestHiddenAccountRepository;
 import edu.iu.uits.lms.siterequest.service.Constants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -77,7 +76,7 @@ public class SiteRequestAdminControllerTest {
    @MockBean
    private AccountService accountService;
    @MockBean
-   private SiteRequestAccountOmitRepository siteRequestAccountOmitRepository;
+   private SiteRequestHiddenAccountRepository siteRequestHiddenAccountRepository;
    @MockBean
    private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
    @MockBean
@@ -105,7 +104,7 @@ public class SiteRequestAdminControllerTest {
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
-      ResultActions resultActions = mvc.perform(get("/app/admin/omitaccount/launch")
+      ResultActions resultActions = mvc.perform(get("/app/admin/hideaccount/launch")
               .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
               .contentType(MediaType.APPLICATION_JSON));
 
@@ -126,12 +125,12 @@ public class SiteRequestAdminControllerTest {
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
-      ResultActions resultActions = mvc.perform(get("/app/admin/omitaccount/launch")
+      ResultActions resultActions = mvc.perform(get("/app/admin/hideaccount/launch")
               .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
               .contentType(MediaType.APPLICATION_JSON));
 
       Assertions.assertEquals(200, resultActions.andReturn().getResponse().getStatus());
-      Assertions.assertEquals("admin/omitAccount", resultActions.andReturn().getModelAndView().getViewName());
+      Assertions.assertEquals("admin/hiddenAccount", resultActions.andReturn().getModelAndView().getViewName());
    }
 
    @Test
@@ -147,7 +146,7 @@ public class SiteRequestAdminControllerTest {
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
-      ResultActions resultActions = mvc.perform(get("/app/admin/omitaccount/launch")
+      ResultActions resultActions = mvc.perform(get("/app/admin/hideaccount/launch")
               .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
               .contentType(MediaType.APPLICATION_JSON));
 

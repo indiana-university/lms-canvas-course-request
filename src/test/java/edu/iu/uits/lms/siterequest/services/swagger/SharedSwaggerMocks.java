@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.siterequest.model;
+package edu.iu.uits.lms.siterequest.services.swagger;
 
 /*-
  * #%L
@@ -33,46 +33,23 @@ package edu.iu.uits.lms.siterequest.model;
  * #L%
  */
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
+import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
+import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.io.Serializable;
-import java.util.Date;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Entity
-@Table(name = "SITEREQUEST_ACCOUNT_OMIT")
-@Data
-@NoArgsConstructor
-public class SiteRequestAccountOmit implements Serializable {
-    @Id
-    @Column(name = "ACCOUNT_ID_TO_OMIT")
-    private Long accountIdToOmit;
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@MockitoBean(types = {AuthorizedUserService.class, BufferingApplicationStartup.class, ClientRegistrationRepository.class,
+        DefaultInstructorRoleRepository.class, LmsDefaultGrantedAuthoritiesMapper.class, OAuth2AuthorizedClientService.class})
+public @interface SharedSwaggerMocks {
 
-    @Column(name = "NOTE")
-    private String note;
-
-    @Column(name = "USER_ADDED_BY")
-    private String userAddedBy;
-
-    @Column(name = "CREATEDON")
-    private Date createdOn;
-
-    @Column(name = "MODIFIEDON")
-    private Date modifiedOn;
-
-    @PreUpdate
-    @PrePersist
-    public void updateTimeStamps() {
-        modifiedOn = new Date();
-        if (createdOn == null) {
-            createdOn = new Date();
-        }
-    }
 }

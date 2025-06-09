@@ -1,3 +1,5 @@
+package edu.iu.uits.lms.siterequest.service;
+
 /*-
  * #%L
  * siterequest
@@ -30,17 +32,28 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-jQuery(document).ready(function($) {
-    let saveButton = $("#siterequest-omitaccount-edit-save");
 
-    if (saveButton.length === 1) {
-        $("#siterequest-omitaccount-edit-save").click(function(event) {
-            let accountIdToOmitInput = $('#siterequest-omitaccount-account');
+import edu.iu.uits.lms.canvas.model.Account;
+import edu.iu.uits.lms.canvas.services.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-            if (accountIdToOmitInput.length === 1 && accountIdToOmitInput.first().val().trim().length === 0) {
-                $("#ui-omitaccount-id-error").removeClass("rvt-display-none");
-                event.preventDefault();
-            }
-       });
-   }
-});
+import java.util.List;
+
+@Service
+public class SiteRequestHiddenAccountService {
+    @Autowired
+    private AccountService accountService;
+
+    public static final int MAXIMUM_NOTE_LENGTH = 255;
+
+    public List<Account> getAccountByName(String name) {
+        List<Account> accounts = accountService.getSubAccounts();
+        accounts = accounts.stream()
+                .filter(account -> name.equals(account.getName()))
+                .toList();
+
+        return accounts;
+    }
+
+}

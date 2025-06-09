@@ -49,37 +49,39 @@
       <div class="rvt-p-tb-md">
         <h1 id="tool-title" class="rvt-ts-36">Site Request Admin Tool</h1>
       </div>
-      <a th:href="|/app/admin/omitaccount/new|" class="rvt-ts-20">
+      <a th:href="|/app/admin/hideaccount/new|" class="rvt-ts-20">
         <rvt-icon name="plus"></rvt-icon>
-        <span>Add a New Omit Account</span>
+        <span>Hide another account</span>
       </a>
 
-      <span id="searchText" hidden>Search for Omit Accounts within the table</span>
+      <span id="searchText" hidden>Search for Hidden Accounts within the table</span>
 
       <form id="theme-list-form" th:action="@{|/app/admin/${courseId}/theme/toggle|}" method="post" enctype="multipart/form-data">
 
-        <table id="omitAccountTable" class="rvt-m-top-lg rvt-table-stripes">
-          <caption class="rvt-sr-only">Table of Omit Accounts</caption>
+        <table id="hiddenAccountTable" class="rvt-m-top-lg rvt-table-stripes">
+          <caption class="rvt-sr-only">Table of Hidden Accounts</caption>
           <thead>
           <tr>
-            <th scope="col" class="colAccountId">Account ID</th>
+            <th scope="col" class="colAccountIdToHide">Account ID To Hide</th>
+            <th scope="col" class="colAccountNameToHide">Account Name To Hide</th>
             <th scope="col" class="colNote">Note</th>
             <th scope="col" class="colUserAddedBy">User Added By</th>
             <th scope="col" class="colDelete">Delete</th>
           </tr>
           </thead>
           <tbody>
-          <tr th:each="omitAccount : ${omitAccounts}">
-            <th scope="row" th:id="|omitAccount-${omitAccount.accountIdToOmit}|">
-              <a th:href="|/app/admin/omitaccount/${omitAccount.accountIdToOmit}/edit|" th:text="${omitAccount.accountIdToOmit}" class="rvt-link" >
+          <tr th:each="hiddenAccount : ${hiddenAccounts}">
+            <td th:id="|hiddenAccount-${hiddenAccount.accountIdToHide}|">
+              <a th:href="|/app/admin/hideaccount/${hiddenAccount.accountIdToHide}/edit|" th:text="${hiddenAccount.accountIdToHide}" class="rvt-link" >
                 12345
               </a>
-              <span th:id="|omitAccount-desc-${omitAccount.accountIdToOmit}|" hidden th:text="|Edit the account to omit|"></span>
-            </th>
-            <td th:text="${omitAccount.note}">note1</td>
-            <td th:text="${omitAccount.userAddedBy}">user1</td>
+              <span th:id="|hiddenAccount-desc-${hiddenAccount.accountIdToHide}|" hidden th:text="|Edit the account to hide|"></span>
+            </td>
+            <td th:text="${hiddenAccount.accountNameToHide}">Account Name To Hide 1</td>
+            <td th:text="${hiddenAccount.note}">note1</td>
+            <td th:text="${hiddenAccount.userAddedBy}">user1</td>
             <td>
-              <a th:href="|/app/admin/omitaccount/${omitAccount.accountIdToOmit}/delete|" class="rvt-link">Delete</a>
+              <a th:href="|/app/admin/hideaccount/${hiddenAccount.accountIdToHide}/delete|" class="rvt-link">Delete</a>
             </td>
           </tr>
           </tbody>
@@ -96,7 +98,7 @@
       <script type="text/javascript" th:src="@{/app/webjars/datatables-select/js/dataTables.select.min.js}"></script>
       <script type="text/javascript" th:src="@{/app/jsrivet/datatables-ext/datatables-filters.js}"></script>
       <script type="text/javascript" th:src="@{/app/jsrivet/datatables-ext/datatables-ally.js}"></script>
-      <script type="text/javascript" th:src="@{/app/js/admin/omitAccount.js}"></script>
+      <script type="text/javascript" th:src="@{/app/js/admin/hiddenAccount.js}"></script>
     </th:block>
   </body>
 

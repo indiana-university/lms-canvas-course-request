@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.siterequest.repository;
+package edu.iu.uits.lms.siterequest.model;
 
 /*-
  * #%L
@@ -33,19 +33,48 @@ package edu.iu.uits.lms.siterequest.repository;
  * #L%
  */
 
-import edu.iu.uits.lms.siterequest.model.SiteRequestAccountOmit;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.repository.ListCrudRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.rest.core.annotation.Description;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.stereotype.Component;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Component
-@RepositoryRestResource(path = "site-request-account-omit",
-        itemResourceDescription = @Description("Site Request Account Omit"),
-        collectionResourceDescription = @Description("Site Request Account Omit"))
-@Tag(name = "SiteRequestAccountOmitRepository", description = "Interact with Theme CRUD operations")
-public interface SiteRequestAccountOmitRepository extends PagingAndSortingRepository<SiteRequestAccountOmit, Long>,
-        ListCrudRepository<SiteRequestAccountOmit, Long> {
+import java.io.Serializable;
+import java.util.Date;
+
+@Entity
+@Table(name = "SITEREQUEST_HIDDEN_ACCOUNT")
+@Data
+@NoArgsConstructor
+public class SiteRequestHiddenAccount implements Serializable {
+    @Id
+    @Column(name = "ACCOUNT_ID_TO_HIDE")
+    private Long accountIdToHide;
+
+    @Column(name = "ACCOUNT_NAME_TO_HIDE")
+    private String accountNameToHide;
+
+    @Column(name = "NOTE")
+    private String note;
+
+    @Column(name = "USER_ADDED_BY")
+    private String userAddedBy;
+
+    @Column(name = "CREATEDON")
+    private Date createdOn;
+
+    @Column(name = "MODIFIEDON")
+    private Date modifiedOn;
+
+    @PreUpdate
+    @PrePersist
+    public void updateTimeStamps() {
+        modifiedOn = new Date();
+        if (createdOn == null) {
+            createdOn = new Date();
+        }
+    }
 }

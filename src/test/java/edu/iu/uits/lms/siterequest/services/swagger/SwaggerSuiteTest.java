@@ -41,22 +41,16 @@ import edu.iu.uits.lms.lti.swagger.AbstractSwaggerEmbeddedToolTest;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerUiCustomTest;
 import org.junit.jupiter.api.Nested;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.NestedTestConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static edu.iu.uits.lms.iuonly.IuCustomConstants.IUCUSTOMREST_PROFILE;
 import static org.springframework.test.context.NestedTestConfiguration.EnclosingConfiguration.INHERIT;
 
-
 @NestedTestConfiguration(INHERIT)
+@SharedSwaggerMocks
 public class SwaggerSuiteTest {
-    @MockBean
-    private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
-    @MockBean
-    private AuthorizedUserService authorizedUserService;
-
-
     @Nested
     @SpringBootTest(classes = {SwaggerTestConfig.class})
     public class SwaggerCustomTest extends AbstractSwaggerCustomTest {
