@@ -49,12 +49,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
@@ -73,19 +73,20 @@ public class SiteRequestAdminControllerTest {
    @Autowired
    private MockMvc mvc;
 
-   @MockBean
+   @MockitoBean
    private AccountService accountService;
-   @MockBean
+   @MockitoBean
    private SiteRequestHiddenAccountRepository siteRequestHiddenAccountRepository;
-   @MockBean
+   @MockitoBean
    private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
-   @MockBean
+   @MockitoBean
    private AuthorizedUserService authorizedUserService;
-   @MockBean
+   @MockitoBean
    private LmsDefaultGrantedAuthoritiesMapper defaultGrantedAuthoritiesMapper;
-   @MockBean
+   @MockitoBean
    private ClientRegistrationRepository clientRegistrationRepository;
-   @MockBean(name = ServerInfo.BEAN_NAME)
+
+   @MockitoBean(name = ServerInfo.BEAN_NAME)
    private ServerInfo serverInfo;
 
    private static String userLoginId = "userLoginId1";
