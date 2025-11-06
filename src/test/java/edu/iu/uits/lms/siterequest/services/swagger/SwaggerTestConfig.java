@@ -1,3 +1,5 @@
+package edu.iu.uits.lms.siterequest.services.swagger;
+
 /*-
  * #%L
  * siterequest
