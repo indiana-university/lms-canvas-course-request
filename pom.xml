@@ -67,7 +67,7 @@
         <jdk.target>25</jdk.target>
         <jquery.version>3.7.1</jquery.version>
         <logcaptor.version>2.12.1</logcaptor.version>
-        <lms-embedded-services.version>6.3.2</lms-embedded-services.version>
+        <lms-embedded-services.version>6.3.3</lms-embedded-services.version>
         <lms-canvas-rivet.version>6.2.9.1_1</lms-canvas-rivet.version>
         <lms-team-spring-boot-it12>6.5.2_2</lms-team-spring-boot-it12>
         <spring-cloud-dependencies.version>2025.0.0</spring-cloud-dependencies.version>
@@ -338,7 +338,12 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                    <proc>full</proc>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
