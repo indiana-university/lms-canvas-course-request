@@ -33,8 +33,6 @@ package edu.iu.uits.lms.siterequest.services.swagger;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
-import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerCustomTest;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerDisabledTest;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerEmbeddedToolTest;

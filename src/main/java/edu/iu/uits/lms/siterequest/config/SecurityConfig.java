@@ -34,7 +34,7 @@ package edu.iu.uits.lms.siterequest.config;
  */
 
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
-import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
+import edu.iu.uits.lms.iuonly.services.ToolPermissionService;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +62,7 @@ public class SecurityConfig {
     private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
 
     @Autowired
-    private AuthorizedUserService authorizedUserService;
+    ToolPermissionService toolPermissionService;
 
     @Autowired
     private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
@@ -113,7 +113,7 @@ public class SecurityConfig {
         //Setup the LTI handshake
         http.with(new Lti13Configurer(), lti ->
                 lti.setSecurityContextRepository(new HttpSessionSecurityContextRepository())
-                        .grantedAuthoritiesMapper(new CustomRoleMapper(defaultInstructorRoleRepository, authorizedUserService)));
+                        .grantedAuthoritiesMapper(new CustomRoleMapper(defaultInstructorRoleRepository, toolPermissionService)));
 
         http.securityMatcher("/**")
                 .authorizeHttpRequests((authz) -> authz.anyRequest().authenticated())

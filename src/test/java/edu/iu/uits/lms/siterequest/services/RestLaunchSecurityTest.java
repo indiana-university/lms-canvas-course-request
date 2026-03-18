@@ -33,7 +33,7 @@ package edu.iu.uits.lms.siterequest.services;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
+import edu.iu.uits.lms.iuonly.services.ToolPermissionService;
 import edu.iu.uits.lms.lti.config.TestUtils;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
@@ -78,7 +78,7 @@ public class RestLaunchSecurityTest {
    private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
 
    @MockitoBean
-   private AuthorizedUserService authorizedUserService;
+   private ToolPermissionService toolPermissionService;
 
    @MockitoBean
    private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;

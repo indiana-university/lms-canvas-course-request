@@ -41,9 +41,9 @@ import edu.iu.uits.lms.canvas.services.TermService;
 import edu.iu.uits.lms.canvas.services.UserService;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.iuonly.repository.HierarchyResourceRepository;
-import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
 import edu.iu.uits.lms.iuonly.services.FeatureAccessServiceImpl;
 import edu.iu.uits.lms.iuonly.services.TemplateAuditService;
+import edu.iu.uits.lms.iuonly.services.ToolPermissionService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.TestUtils;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
@@ -106,7 +106,7 @@ public class AppLaunchSecurityTest {
    @MockitoBean
    private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
    @MockitoBean
-   private AuthorizedUserService authorizedUserService;
+   private ToolPermissionService toolPermissionService;
    @MockitoBean
    private LmsDefaultGrantedAuthoritiesMapper defaultGrantedAuthoritiesMapper;
    @MockitoBean

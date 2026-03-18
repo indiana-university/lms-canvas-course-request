@@ -33,8 +33,7 @@ package edu.iu.uits.lms.siterequest;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.acl.AuthorizedUser;
-import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
+import edu.iu.uits.lms.iuonly.services.ToolPermissionService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.siterequest.config.CustomRoleMapper;
@@ -55,13 +54,13 @@ import static edu.iu.uits.lms.siterequest.service.Constants.AUTH_ADMIN_TOOL_PERM
 public class CustomRoleMapperTest {
     private DefaultInstructorRoleRepository defaultInstructorRoleRepository = Mockito.mock();
 
-    private AuthorizedUserService authorizedUserService = Mockito.mock();
+    private ToolPermissionService toolPermissionService = Mockito.mock();
 
     private static final String userLoginId = "userLoginId1";
 
     @Test
     public void testFrontEndUser() throws Exception {
-        CustomRoleMapper customRoleMapper = new CustomRoleMapper(defaultInstructorRoleRepository, authorizedUserService);
+        CustomRoleMapper customRoleMapper = new CustomRoleMapper(defaultInstructorRoleRepository, toolPermissionService);
 
         Map<String, Object> claims = new HashMap<>();
         Map<String, Object> customClaims = new HashMap<>();
@@ -94,7 +93,7 @@ public class CustomRoleMapperTest {
 
     @Test
     public void testAdminNotAuthUser() throws Exception {
-        CustomRoleMapper customRoleMapper = new CustomRoleMapper(defaultInstructorRoleRepository, authorizedUserService);
+        CustomRoleMapper customRoleMapper = new CustomRoleMapper(defaultInstructorRoleRepository, toolPermissionService);
 
         Map<String, Object> claims = new HashMap<>();
         Map<String, Object> customClaims = new HashMap<>();
@@ -121,7 +120,7 @@ public class CustomRoleMapperTest {
 
     @Test
     public void testAdminIsAuthUser() throws Exception {
-        CustomRoleMapper customRoleMapper = new CustomRoleMapper(defaultInstructorRoleRepository, authorizedUserService);
+        CustomRoleMapper customRoleMapper = new CustomRoleMapper(defaultInstructorRoleRepository, toolPermissionService);
 
         Map<String, Object> claims = new HashMap<>();
         Map<String, Object> customClaims = new HashMap<>();
@@ -135,12 +134,8 @@ public class CustomRoleMapperTest {
 
         Mockito.when(defaultInstructorRoleRepository.findInstructorRoles()).thenReturn(List.of(LTIConstants.CANVAS_INSTRUCTOR_ROLE));
 
-        AuthorizedUser authorizedUser = new AuthorizedUser();
-        authorizedUser.setId(1L);
-        authorizedUser.setCanvasUserId(userLoginId);
-
-        Mockito.when(authorizedUserService.findByActiveUsernameAndToolPermission(userLoginId, AUTH_ADMIN_TOOL_PERMISSION))
-                .thenReturn(authorizedUser);
+        Mockito.when(toolPermissionService.isAuthorized(userLoginId, AUTH_ADMIN_TOOL_PERMISSION))
+                .thenReturn(true);
 
         List<GrantedAuthority> mappedAuthorities = (List<GrantedAuthority>) customRoleMapper.mapAuthorities(List.of(oidcUserAuthority));
 

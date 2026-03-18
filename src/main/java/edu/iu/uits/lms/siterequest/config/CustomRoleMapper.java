@@ -33,8 +33,7 @@ package edu.iu.uits.lms.siterequest.config;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.acl.AuthorizedUser;
-import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
+import edu.iu.uits.lms.iuonly.services.ToolPermissionService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
@@ -54,12 +53,12 @@ import static edu.iu.uits.lms.siterequest.service.Constants.AUTH_ADMIN_TOOL_PERM
 @Slf4j
 public class CustomRoleMapper extends LmsDefaultGrantedAuthoritiesMapper {
 
-    private AuthorizedUserService authorizedUserService;
+    private ToolPermissionService toolPermissionService;
 
-    public CustomRoleMapper(DefaultInstructorRoleRepository defaultInstructorRoleRepository, AuthorizedUserService authorizedUserService) {
-      super(defaultInstructorRoleRepository);
-      this.authorizedUserService = authorizedUserService;
-   }
+    public CustomRoleMapper(DefaultInstructorRoleRepository defaultInstructorRoleRepository, ToolPermissionService toolPermissionService) {
+        super(defaultInstructorRoleRepository);
+        this.toolPermissionService = toolPermissionService;
+    }
 
    @Override
    public Collection<? extends GrantedAuthority> mapAuthorities(Collection<? extends GrantedAuthority> authorities) {
@@ -78,9 +77,7 @@ public class CustomRoleMapper extends LmsDefaultGrantedAuthoritiesMapper {
                log.debug("Admin mode");
                String userId = oidcTokenUtils.getUserLoginId();
 
-               AuthorizedUser user = authorizedUserService.findByActiveUsernameAndToolPermission(userId, AUTH_ADMIN_TOOL_PERMISSION);
-
-               if (user != null) {
+               if (toolPermissionService.isAuthorized(userId, AUTH_ADMIN_TOOL_PERMISSION)) {
                    OidcUserAuthority newUserAuth = new OidcUserAuthority(LTIConstants.INSTRUCTOR_AUTHORITY, userAuth.getIdToken(), userAuth.getUserInfo());
                    remappedAuthorities.add(newUserAuth);
                }

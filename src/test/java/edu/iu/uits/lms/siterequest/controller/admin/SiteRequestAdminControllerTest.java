@@ -35,7 +35,7 @@ package edu.iu.uits.lms.siterequest.controller.admin;
 
 import edu.iu.uits.lms.canvas.services.AccountService;
 import edu.iu.uits.lms.common.server.ServerInfo;
-import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
+import edu.iu.uits.lms.iuonly.services.ToolPermissionService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.TestUtils;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
@@ -80,7 +80,7 @@ public class SiteRequestAdminControllerTest {
    @MockitoBean
    private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
    @MockitoBean
-   private AuthorizedUserService authorizedUserService;
+   private ToolPermissionService toolPermissionService;
    @MockitoBean
    private LmsDefaultGrantedAuthoritiesMapper defaultGrantedAuthoritiesMapper;
    @MockitoBean
