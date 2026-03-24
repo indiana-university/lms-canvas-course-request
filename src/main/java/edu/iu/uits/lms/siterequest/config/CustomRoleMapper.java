@@ -33,7 +33,6 @@ package edu.iu.uits.lms.siterequest.config;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.acl.AuthorizedUser;
 import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
@@ -78,9 +77,7 @@ public class CustomRoleMapper extends LmsDefaultGrantedAuthoritiesMapper {
                log.debug("Admin mode");
                String userId = oidcTokenUtils.getUserLoginId();
 
-               AuthorizedUser user = authorizedUserService.findByActiveUsernameAndToolPermission(userId, AUTH_ADMIN_TOOL_PERMISSION);
-
-               if (user != null) {
+               if (authorizedUserService.isAuthorized(userId, AUTH_ADMIN_TOOL_PERMISSION)) {
                    OidcUserAuthority newUserAuth = new OidcUserAuthority(LTIConstants.INSTRUCTOR_AUTHORITY, userAuth.getIdToken(), userAuth.getUserInfo());
                    remappedAuthorities.add(newUserAuth);
                }
