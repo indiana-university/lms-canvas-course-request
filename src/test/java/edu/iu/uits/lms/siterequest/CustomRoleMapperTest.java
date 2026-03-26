@@ -33,7 +33,6 @@ package edu.iu.uits.lms.siterequest;
  * #L%
  */
 
-import edu.iu.uits.lms.iuonly.model.acl.AuthorizedUser;
 import edu.iu.uits.lms.iuonly.services.AuthorizedUserService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
@@ -135,12 +134,8 @@ public class CustomRoleMapperTest {
 
         Mockito.when(defaultInstructorRoleRepository.findInstructorRoles()).thenReturn(List.of(LTIConstants.CANVAS_INSTRUCTOR_ROLE));
 
-        AuthorizedUser authorizedUser = new AuthorizedUser();
-        authorizedUser.setId(1L);
-        authorizedUser.setCanvasUserId(userLoginId);
-
-        Mockito.when(authorizedUserService.findByActiveUsernameAndToolPermission(userLoginId, AUTH_ADMIN_TOOL_PERMISSION))
-                .thenReturn(authorizedUser);
+        Mockito.when(authorizedUserService.isAuthorized(userLoginId, AUTH_ADMIN_TOOL_PERMISSION))
+                .thenReturn(true);
 
         List<GrantedAuthority> mappedAuthorities = (List<GrantedAuthority>) customRoleMapper.mapAuthorities(List.of(oidcUserAuthority));
 
